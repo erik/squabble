@@ -39,16 +39,23 @@ def parse_config(config_file):
         return json.load(fp)
 
 
-def check_config_rules(config, file_name):
+def parse_file_rules(file_name):
     with open(file_name, 'r') as fp:
         text = fp.read()
 
-    file_config = extract_file_rules(text)
-
-    print('checking', file_config, text)
+    return extract_file_rules(text)
 
 
 def extract_file_rules(text):
+    '''
+    Try to extract any file-level rule additions/suppressions.
+
+    Valid lines are SQL line comments that enable or disable specific rules.
+
+     >>> extract_file_rules('...\n-- enable:rule1 disable:rule2\n...')
+
+     {'enable': ['rule1'], 'disable': ['rule2']}
+    '''
     rules = {
         'enable': [],
         'disable': []

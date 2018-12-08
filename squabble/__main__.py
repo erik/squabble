@@ -20,8 +20,9 @@ from pkg_resources import get_distribution
 
 import docopt
 
-from . import logger
 from . import config
+from . import lint
+from . import logger
 
 
 def main():
@@ -43,7 +44,10 @@ def main():
     cfg = config.parse_config(config_file)
 
     for file_name in migrations:
-        config.check_config_rules(cfg, file_name)
+        rules = config.parse_file_rules(file_name)
+        engine = lint.Engine.from_config(cfg, rules)
+
+        engine.lint(file_name)
 
 
 if __name__ == '__main__':
