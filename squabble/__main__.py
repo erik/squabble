@@ -23,6 +23,7 @@ import docopt
 from . import config
 from . import lint
 from . import logger
+from . import rules
 
 
 def main():
@@ -42,11 +43,17 @@ def main():
         sys.exit(1)
 
     cfg = config.parse_config(config_file)
+    rule_set = rules.load()
 
     for file_name in migrations:
-        rules = config.parse_file_rules(file_name)
-        engine = lint.Engine.from_config(cfg, rules)
+        file_rules = config.parse_file_rules(file_name)
+        enabled_rules = filter(
+            lambda r: (
+                (r.name in cfg['rules'] or r.name in file_rules['enabled']) and
+                (r.name not in file_rules['disabled'])),
+            rule_set)
 
+        engine = lint.Engine.from_config(cfg, enabled_rules)
         engine.lint(file_name)
 
 

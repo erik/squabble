@@ -1,8 +1,4 @@
-''' linting engine '''
-
-
-def load_python_rules(directory):
-    pass
+""" linting engine """
 
 
 class Engine:
