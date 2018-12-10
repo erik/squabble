@@ -46,15 +46,25 @@ def main():
     rule_set = rules.load()
 
     for file_name in migrations:
-        file_rules = config.parse_file_rules(file_name)
-        enabled_rules = filter(
-            lambda r: (
-                (r.name in cfg['rules'] or r.name in file_rules['enabled']) and
-                (r.name not in file_rules['disabled'])),
-            rule_set)
+        # TODO: wire this part up
+        #
+        # file_rules = config.parse_file_rules(file_name)
+        # enabled_rules = filter(
+        #     lambda r: (
+        #         (r.__name__ in cfg['rules'] or r.__name__ in file_rules['enabled']) and
+        #         (r.__name__ not in file_rules['disabled'])),
+        #     rule_set)
 
-        engine = lint.Engine.from_config(cfg, enabled_rules)
-        engine.lint(file_name)
+        engine = lint.Engine([
+            rules.AddColumnDisallowConstraints({
+                'disallowed': ['DEFAULT', 'UNIQUE']
+            })
+        ])
+
+        errors = engine.lint(file_name)
+
+        for e in errors:
+            print('lint error:', e)
 
 
 if __name__ == '__main__':

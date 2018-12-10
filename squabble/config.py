@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 import subprocess
 
 from . import logger
@@ -52,28 +53,40 @@ def extract_file_rules(text):
 
     Valid lines are SQL line comments that enable or disable specific rules.
 
-     >>> extract_file_rules('...\n-- enable:rule1 disable:rule2\n...')
+     >>> extract_file_rules('...\n-- enable:rule1 opt=foo arr=a,b,c')
 
-     {'enable': ['rule1'], 'disable': ['rule2']}
+     {'disable': [], 'enable': {'rule1': {'opt': 'foo', 'arr': ['a','b','c']}}}
     '''
     rules = {
-        'enable': [],
-        'disable': []
+        'enable': {},
+        'disable': [],
     }
+
+    comment_re = re.compile(r'--\s*(enable|disable):(\w+)(.*)', re.I)
 
     for line in text.splitlines():
         line = line.strip()
 
-        if not line.startswith('-- '):
+        m = re.match(comment_re, line)
+        if m is None:
             continue
 
-        for word in line.split(' '):
-            split = word.split(':')
+        action, rule, args = m.groups()
 
-            if len(split) != 2:
-                continue
+        if action == 'disable':
+            rules['disable'].append(rule)
 
-            elif split[0] in ('enable', 'disable'):
-                rules[split[0]].append(split[1])
+        elif action == 'enable':
+            options = {}
+
+            for opt in args.strip().split(' '):
+                k, v = opt.split('=', 1)
+
+                if ',' in v:
+                    v = v.split(',')
+
+                options[k] = v
+
+            rules['enable'][rule] = options
 
     return rules

@@ -67,17 +67,15 @@ class AddColumnDisallowConstraints(Rule):
         'DEFAULT': ConstrType.CONSTR_DEFAULT,
         'NULL': ConstrType.CONSTR_NULL,
         'NOT NULL': ConstrType.CONSTR_NOTNULL,
-        'FOREIGN': ConstrType.FOREIGN,
-        'UNIQUE': ConstrType.UNIQUE,
+        'FOREIGN': ConstrType.CONSTR_FOREIGN,
+        'UNIQUE': ConstrType.CONSTR_UNIQUE,
     }
 
     MESSAGES = {
-        'constraint_not_allowed': 'column {col} has a disallowed constraint'
+        'constraint_not_allowed': 'column "{0}" has a disallowed constraint'
     }
 
     def __init__(self, opts):
-        super().__init__(self, opts)
-
         if 'disallowed' not in opts or opts['disallowed'] == []:
             raise RuleConfigurationException(
                 'must specify `disallowed` constraints')
@@ -91,6 +89,7 @@ class AddColumnDisallowConstraints(Rule):
 
             constraints.append(ty)
 
+        self._opts = opts
         self._blocked_constraints = set(constraints)
 
     def enable(self, ctx):
@@ -123,10 +122,11 @@ class AddColumnDisallowConstraints(Rule):
             return
 
         for constraint in constraints:
-            if constraint.contype in self._blocked_constraints:
-                ctx.fail('constraint_not_allowed', node=constraint, msg={
-                    'col': node['def'].colname
-                })
+            if constraint.contype.value in self._blocked_constraints:
+                col = node['def'].colname.value
+                msg = self.MESSAGES['constraint_not_allowed'].format(col)
+
+                ctx.failure(msg, node=constraint)
 
 
 def load():

@@ -4,15 +4,16 @@ from squabble import config
 def test_extract_file_rules():
     text = '''
 foo
--- disable:enable:disable
--- disable:123 enable:456
+-- enable:foo k1=v1 k2=v2
 bar
 -- disable:abc enable:xyz
 '''
 
     rules = config.extract_file_rules(text)
 
-    assert rules == {
-        'enable': ['456', 'xyz'],
-        'disable': ['123', 'abc'],
+    expected = {
+        'enable': {'foo': {'k1': 'v1', 'k2': 'v2'}},
+        'disable': ['abc'],
     }
+
+    assert expected == rules
