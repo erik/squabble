@@ -2,26 +2,20 @@
 
 
 class Engine:
-    def __init__(self):
-        self._rules = []
+    def __init__(self, rules):
+        self._rules = rules
+        self._stack = []
 
     @staticmethod
-    def from_config(config, file_rules=[]):
-        engine = Engine()
+    def from_config(config, enabled_rules):
+        engine = Engine(enabled_rules)
 
         return engine
 
     def lint(self, file_name):
         pass
 
-    def disable_rule():
-        pass
 
-    def enable_rule():
-        pass
-
-    def push_node():
-        pass
-
-    def pop_node():
+def LintContext:
+    def __init__(self):
         pass
