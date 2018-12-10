@@ -30,8 +30,6 @@ def main():
     version = get_distribution('squabble').version
     args = docopt.docopt(__doc__, version=version)
 
-    print(args)
-
     if args['--verbose']:
         logger.setLevel('DEBUG')
 
@@ -42,29 +40,21 @@ def main():
         print('Could not find a valid config file!')
         sys.exit(1)
 
-    cfg = config.parse_config(config_file)
-    rule_set = rules.load()
+    base_config = config.parse_config(config_file)
+
+    # Load all of the rule classes into memory
+    rules.load(plugins=base_config.plugins)
 
     for file_name in migrations:
-        # TODO: wire this part up
-        #
-        # file_rules = config.parse_file_rules(file_name)
-        # enabled_rules = filter(
-        #     lambda r: (
-        #         (r.__name__ in cfg['rules'] or r.__name__ in file_rules['enabled']) and
-        #         (r.__name__ not in file_rules['disabled'])),
-        #     rule_set)
+        lint_file(base_config, file_name)
 
-        engine = lint.Engine([
-            rules.AddColumnDisallowConstraints({
-                'disallowed': ['DEFAULT', 'UNIQUE']
-            })
-        ])
 
-        errors = engine.lint(file_name)
+def lint_file(base_config, file_name):
+    file_config = config.apply_file_config(base_config, file_name)
+    errors = lint.check_file(file_config, file_name)
 
-        for e in errors:
-            print('lint error:', e)
+    for e in errors:
+        print('lint error:', e)
 
 
 if __name__ == '__main__':

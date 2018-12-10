@@ -1,9 +1,13 @@
+import collections
 import json
 import os.path
 import re
 import subprocess
 
 from . import logger
+
+
+Config = collections.namedtuple('Config', ['plugins', 'rules'])
 
 
 def discover_config_location():
@@ -34,10 +38,34 @@ def get_vcs_root():
         'echo ""')
 
 
-# TODO: extract config into a class rather than bare dict
 def parse_config(config_file):
     with open(config_file, 'r') as fp:
-        return json.load(fp)
+        obj = json.load(fp)
+
+    return Config(
+        plugins=obj.get('plugins', []),
+        rules=obj.get('rules',  {})
+    )
+
+
+def apply_file_config(base, file_name):
+    """
+    Given a base configuration object and a file, return a new config that
+    applies any file-specific rule additions/deletions
+    """
+
+    # Operate on a copy so we don't mutate the base config
+    config = base._asdict()
+
+    rules = parse_file_rules(file_name)
+
+    for rule, opts in rules['enable'].items():
+        config['rules'][rule] = opts
+
+    for rule in rules['disable']:
+        del config['rules'][rule]
+
+    return Config(**config)
 
 
 def parse_file_rules(file_name):
@@ -48,7 +76,7 @@ def parse_file_rules(file_name):
 
 
 def extract_file_rules(text):
-    '''
+    """
     Try to extract any file-level rule additions/suppressions.
 
     Valid lines are SQL line comments that enable or disable specific rules.
@@ -56,7 +84,8 @@ def extract_file_rules(text):
      >>> extract_file_rules('...\n-- enable:rule1 opt=foo arr=a,b,c')
 
      {'disable': [], 'enable': {'rule1': {'opt': 'foo', 'arr': ['a','b','c']}}}
-    '''
+    """
+
     rules = {
         'enable': {},
         'disable': [],

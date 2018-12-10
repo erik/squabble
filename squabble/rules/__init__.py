@@ -4,26 +4,50 @@ from pglast.enums import AlterTableType, ConstrType
 from .. import SquabbleException
 
 
-known_rules = {}
+class RuleConfigurationException(SquabbleException):
+    pass
 
 
-def register_rule(cls):
-    meta = cls.meta()
-    print('registering rule: %s' % repr(meta))
+class UnknownRuleException(SquabbleException):
+    pass
 
-    known_rules[meta['name']] = {
-        'class': cls,
-        'meta': meta
-    }
+
+def load(plugins):
+    if plugins != []:
+        raise NotImplementedError('no plugin support yet')
+
+    return [
+        AddColumnDisallowConstraints
+    ]
 
 
 class Rule:
+    REGISTRY = {}
+
     def __init__(self, options):
         self._options = options
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        register_rule(cls)
+        Rule._register(cls)
+
+    @staticmethod
+    def _register(cls):
+        meta = cls.meta()
+        print('registering rule: %s' % repr(meta))
+
+        Rule.REGISTRY[meta['name']] = {
+            'class': cls,
+            'meta': meta
+        }
+
+    @staticmethod
+    def get(name):
+        meta = Rule.REGISTRY.get(name)
+        if meta is None:
+            raise UnknownRuleException('no rule named "%s"' % name)
+
+        return meta
 
     @classmethod
     def meta(cls):
@@ -37,10 +61,6 @@ class Rule:
 
     def enable(self, ctx):
         raise NotImplementedError('must be overridden by subclass')
-
-
-class RuleConfigurationException(SquabbleException):
-    pass
 
 
 class AddColumnDisallowConstraints(Rule):
@@ -127,9 +147,3 @@ class AddColumnDisallowConstraints(Rule):
                 msg = self.MESSAGES['constraint_not_allowed'].format(col)
 
                 ctx.failure(msg, node=constraint)
-
-
-def load():
-    return [
-        AddColumnDisallowConstraints
-    ]

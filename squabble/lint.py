@@ -2,6 +2,8 @@
 
 import pglast
 
+from .rules import Rule
+
 
 def parse_file(file_name):
     with open(file_name, 'r') as fp:
@@ -10,16 +12,29 @@ def parse_file(file_name):
     return pglast.Node(pglast.parse_sql(contents))
 
 
-class Engine:
+def configure_rules(rule_config):
+    rules = []
+
+    for name, options in rule_config.items():
+        meta = Rule.get(name)
+        cls = meta['class']
+
+        rules.append(cls(options))
+
+    return rules
+
+
+def check_file(config, file_name):
+    rules = configure_rules(config.rules)
+    session = Session(rules)
+
+    return session.lint(file_name)
+
+
+class Session:
     def __init__(self, rules):
         self._rules = rules
-        self._stack = []
         self._failures = []
-
-    @staticmethod
-    def from_config(config, enabled_rules):
-        engine = Engine(enabled_rules)
-        return engine
 
     def add_failure(self, failure):
         self._failures.append(failure)
@@ -54,8 +69,6 @@ class LintContext:
 
                 # children can set up their own hooks, so recurse
                 child_ctx.traverse(node)
-
-        print('done!')
 
     def register(self, nodes, fn):
         """TODO: write me"""
