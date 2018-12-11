@@ -1,24 +1,24 @@
-import pglast
-from pglast.enums import AlterTableType, ConstrType
+import glob
+import importlib
+import os.path
+import sys
 
-from .. import SquabbleException
-
-
-class RuleConfigurationException(SquabbleException):
-    pass
-
-
-class UnknownRuleException(SquabbleException):
-    pass
+from .. import logger, UnknownRuleException
 
 
 def load(plugins):
     if plugins != []:
         raise NotImplementedError('no plugin support yet')
 
-    return [
-        AddColumnDisallowConstraints
-    ]
+    modules = glob.glob(os.path.dirname(__file__) + '/*.py')
+
+    for mod in modules:
+        mod_name = os.path.basename(mod)[:-3]
+
+        if not os.path.isfile(mod) or mod_name.startswith('__'):
+            continue
+
+        importlib.import_module(__name__ + '.' + mod_name)
 
 
 class Rule:
@@ -34,12 +34,11 @@ class Rule:
     @staticmethod
     def _register(cls):
         meta = cls.meta()
-        print('registering rule: %s' % repr(meta))
+        name = meta['name']
 
-        Rule.REGISTRY[meta['name']] = {
-            'class': cls,
-            'meta': meta
-        }
+        logger.debug('registering class %s' % name)
+
+        Rule.REGISTRY[name] = {'class': cls, 'meta': meta}
 
     @staticmethod
     def get(name):
@@ -61,89 +60,3 @@ class Rule:
 
     def enable(self, ctx):
         raise NotImplementedError('must be overridden by subclass')
-
-
-class AddColumnDisallowConstraints(Rule):
-    """
-    Prevent adding a column with certain constraints to an existing table
-
-    Configuration:
-
-        "rules": {
-            "AddColumnDisallowConstraints": {
-                "disallowed": ["DEFAULT", "FOREIGN"]
-            }
-        }
-
-    Valid constraint types:
-      - DEFAULT
-      - NULL
-      - NOT NULL
-      - FOREIGN
-      - UNIQUE
-    """
-
-    CONSTRAINT_MAP = {
-        'DEFAULT': ConstrType.CONSTR_DEFAULT,
-        'NULL': ConstrType.CONSTR_NULL,
-        'NOT NULL': ConstrType.CONSTR_NOTNULL,
-        'FOREIGN': ConstrType.CONSTR_FOREIGN,
-        'UNIQUE': ConstrType.CONSTR_UNIQUE,
-    }
-
-    MESSAGES = {
-        'constraint_not_allowed': 'column "{0}" has a disallowed constraint'
-    }
-
-    def __init__(self, opts):
-        if 'disallowed' not in opts or opts['disallowed'] == []:
-            raise RuleConfigurationException(
-                'must specify `disallowed` constraints')
-
-        constraints = []
-
-        for c in opts['disallowed']:
-            ty = self.CONSTRAINT_MAP[c.upper()]
-            if ty is None:
-                raise RuleConfigurationException('unknown constraint: `%s`' % c)
-
-            constraints.append(ty)
-
-        self._opts = opts
-        self._blocked_constraints = set(constraints)
-
-    def enable(self, ctx):
-        ctx.register(['AlterTableCmd'], lambda c, n: self.check(c, n))
-
-    def check(self, ctx, node):
-        """
-        Node is an `AlterTableCmd`:
-
-        {
-          'AlterTableCmd': {
-            'def': {
-              'ColumnDef': {
-                'colname': 'bar',
-                'constraints': [{'Constraint': {'contype': 2, 'location': 35}}]
-              }
-            }
-          }
-        }
-        """
-
-        # We only care about adding a column
-        if node.subtype != AlterTableType.AT_AddColumn:
-            return
-
-        constraints = node['def'].constraints
-
-        # No constraints imposed, nothing to do.
-        if constraints == pglast.Missing:
-            return
-
-        for constraint in constraints:
-            if constraint.contype.value in self._blocked_constraints:
-                col = node['def'].colname.value
-                msg = self.MESSAGES['constraint_not_allowed'].format(col)
-
-                ctx.failure(msg, node=constraint)
