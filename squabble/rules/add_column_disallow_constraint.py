@@ -1,9 +1,9 @@
 import pglast
 from pglast.enums import AlterTableType, ConstrType
 
-from .. import RuleConfigurationException
+from squabble import RuleConfigurationException
 
-from . import Rule
+from squabble.rules import Rule
 
 
 class AddColumnDisallowConstraints(Rule):
@@ -56,9 +56,9 @@ class AddColumnDisallowConstraints(Rule):
         self._blocked_constraints = set(constraints)
 
     def enable(self, ctx):
-        ctx.register(['AlterTableCmd'], lambda c, n: self.check(c, n))
+        ctx.register(['AlterTableCmd'], lambda c, n: self._check(c, n))
 
-    def check(self, ctx, node):
+    def _check(self, ctx, node):
         """
         Node is an `AlterTableCmd`:
 
@@ -89,4 +89,4 @@ class AddColumnDisallowConstraints(Rule):
                 col = node['def'].colname.value
                 msg = self.MESSAGES['constraint_not_allowed'].format(col)
 
-                ctx.failure(msg, node=constraint)
+                ctx.report(self, msg, node=constraint)

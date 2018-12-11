@@ -18,12 +18,14 @@ import os.path
 import sys
 from pkg_resources import get_distribution
 
+import colorama
 import docopt
 
-from . import config
-from . import lint
-from . import logger
-from . import rules
+from squabble import config
+from squabble import lint
+from squabble import logger
+from squabble import rules
+from squabble import reporter
 
 
 def main():
@@ -45,17 +47,18 @@ def main():
     # Load all of the rule classes into memory
     rules.load(plugins=base_config.plugins)
 
+    issues = []
     for file_name in migrations:
-        lint_file(base_config, file_name)
+        issues = lint_file(base_config, file_name)
+
+    reporter.report(base_config, issues)
 
 
 def lint_file(base_config, file_name):
     file_config = config.apply_file_config(base_config, file_name)
-    errors = lint.check_file(file_config, file_name)
-
-    for e in errors:
-        print('lint error:', e)
+    return lint.check_file(file_config, file_name)
 
 
 if __name__ == '__main__':
+    colorama.init()
     main()

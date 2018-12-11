@@ -7,7 +7,11 @@ import subprocess
 from . import logger
 
 
-Config = collections.namedtuple('Config', ['plugins', 'rules'])
+Config = collections.namedtuple('Config', [
+    'reporter',
+    'plugins',
+    'rules'
+])
 
 
 def discover_config_location():
@@ -43,8 +47,9 @@ def parse_config(config_file):
         obj = json.load(fp)
 
     return Config(
+        reporter=obj.get('reporter', 'plain'),
         plugins=obj.get('plugins', []),
-        rules=obj.get('rules',  {})
+        rules=obj.get('rules',  {}),
     )
 
 

@@ -19,6 +19,7 @@ setup(
     license='GPLv3+',
     install_requires=[
         'pglast==1.1',
-        'docopt==0.6.2'
+        'docopt==0.6.2',
+        'colorama==0.4.1'
     ]
 )

@@ -1,9 +1,8 @@
 import glob
 import importlib
 import os.path
-import sys
 
-from .. import logger, UnknownRuleException
+from squabble import logger, UnknownRuleException
 
 
 def load(plugins):

@@ -1,8 +1,20 @@
 """ linting engine """
 
+import collections
+
 import pglast
 
 from .rules import Rule
+
+
+LintIssue = collections.namedtuple('LintIssue', [
+    'msg',
+    'verbose',
+    'node',
+    'file',
+    'rule',
+    'severity',
+])
 
 
 def parse_file(file_name):
@@ -26,35 +38,37 @@ def configure_rules(rule_config):
 
 def check_file(config, file_name):
     rules = configure_rules(config.rules)
-    session = Session(rules)
 
-    return session.lint(file_name)
+    s = Session(rules, file_name)
+    return s.lint()
 
 
 class Session:
-    def __init__(self, rules):
+    def __init__(self, rules, file_name):
         self._rules = rules
-        self._failures = []
+        self._file = file_name
+        self._issues = []
 
-    def add_failure(self, failure):
-        self._failures.append(failure)
+    def report_issue(self, issue):
+        i = issue._replace(file=self._file)
+        self._issues.append(i)
 
-    def lint(self, file_name):
+    def lint(self):
         root_ctx = LintContext(self)
 
         for rule in self._rules:
             rule.enable(root_ctx)
 
-        ast = parse_file(file_name)
+        ast = parse_file(self._file)
         root_ctx.traverse(ast)
 
-        return self._failures
+        return self._issues
 
 
 class LintContext:
-    def __init__(self, engine):
+    def __init__(self, session):
         self._hooks = {}
-        self._engine = engine
+        self._session = session
 
     def traverse(self, parent_node):
         for node in parent_node.traverse():
@@ -64,7 +78,7 @@ class LintContext:
 
             tag = node.node_tag
             for hook in self._hooks.get(tag, []):
-                child_ctx = LintContext(self._engine)
+                child_ctx = LintContext(self._session)
                 hook(child_ctx, node)
 
                 # children can set up their own hooks, so recurse
@@ -78,9 +92,12 @@ class LintContext:
 
             self._hooks[n].append(fn)
 
-    def failure(self, msg, node=None, verbose_msg=None):
-        self._engine.add_failure({
-            'msg': msg,
-            'node': node,
-            'verbose': verbose_msg
-        })
+    def report(self, rule, msg, node, verbose=None, severity='ERROR'):
+        self._session.report_issue(LintIssue(
+            rule=rule,
+            msg=msg,
+            node=node,
+            verbose=verbose,
+            severity=severity,
+            file=None
+        ))
