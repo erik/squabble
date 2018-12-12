@@ -59,7 +59,9 @@ class Session:
         for rule in self._rules:
             rule.enable(root_ctx)
 
+        # TODO: Should report an issue instead of crashing on parse error
         ast = parse_file(self._file)
+
         root_ctx.traverse(ast)
 
         return self._issues

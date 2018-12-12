@@ -10,10 +10,12 @@ _REPORTERS = {}
 def reporter(name):
     def wrapper(fn):
         _REPORTERS[name] = fn
+
         @functools.wraps(fn)
         def wrapped(*args, **kwargs):
             return fn(*args, **kwargs)
         return wrapped
+
     return wrapper
 
 
@@ -49,7 +51,7 @@ def issue_to_file_location(issue, contents):
             return (line, i, loc)
 
         # Add 1 to count the newline char.
-        # TO DO: won't work with \r\n
+        # TODO: won't work with \r\n
         loc -= len(line) + 1
 
     return ('', 1, 0)
@@ -83,7 +85,7 @@ def plain_text_reporter(issue, file_contents):
 
     if info['line'] != '':
         _print_err(info['line'])
-        _print_err('~' * info['column'] + '^')
+        _print_err(' ' * info['column'] + '^')
         _print_err('')
 
 
@@ -107,7 +109,7 @@ def color_reporter(issue, file_contents):
     }))
 
     if info['line'] != '':
-        arrow = '~' * info['column'] + '^'
+        arrow = ' ' * info['column'] + '👆'
         _print_err(info['line'])
-        _print_err(Style.BRIGHT + arrow + Style.RESET_ALL)
+        _print_err(arrow)
         _print_err('')

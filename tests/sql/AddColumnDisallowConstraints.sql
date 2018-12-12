@@ -1,4 +1,4 @@
--- enable:AddColumnDisallowConstraints disallowed=DEFAULT,FOREIGN,UNIQUE
+-- enable:AddColumnDisallowConstraints disallowed=DEFAULT,FOREIGN
 
 ALTER TABLE foobar ADD COLUMN colname coltype DEFAULT baz;
 
