@@ -10,7 +10,9 @@ class SquabbleException(Exception):
 
 
 class RuleConfigurationException(SquabbleException):
-    pass
+    def __init__(self, rule, msg):
+        self.rule = rule
+        self.msg = msg
 
 
 class UnknownRuleException(SquabbleException):

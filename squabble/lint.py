@@ -4,7 +4,8 @@ import collections
 
 import pglast
 
-from .rules import Rule
+from squabble import RuleConfigurationException
+from squabble.rules import Rule
 
 
 LintIssue = collections.namedtuple('LintIssue', [
@@ -37,7 +38,17 @@ def configure_rules(rule_config):
 
 
 def check_file(config, file_name):
-    rules = configure_rules(config.rules)
+    try:
+        rules = configure_rules(config.rules)
+    except RuleConfigurationException as exc:
+        return [LintIssue(
+            msg=exc.msg,
+            rule=exc.rule,
+            node=None,
+            file=file_name,
+            severity='ERROR',
+            location=None,
+        )]
 
     s = Session(rules, file_name)
     return s.lint()

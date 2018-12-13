@@ -41,14 +41,15 @@ class AddColumnDisallowConstraints(Rule):
     def __init__(self, opts):
         if 'disallowed' not in opts or opts['disallowed'] == []:
             raise RuleConfigurationException(
-                'must specify `disallowed` constraints')
+                self, 'must specify `disallowed` constraints')
 
         constraints = []
 
         for c in opts['disallowed']:
             ty = self.CONSTRAINT_MAP[c.upper()]
             if ty is None:
-                raise RuleConfigurationException('unknown constraint: `%s`' % c)
+                raise RuleConfigurationException(
+                    self, 'unknown constraint: `%s`' % c)
 
             constraints.append(ty)
 
