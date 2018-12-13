@@ -9,11 +9,11 @@ from .rules import Rule
 
 LintIssue = collections.namedtuple('LintIssue', [
     'msg',
-    'verbose',
     'node',
     'file',
     'rule',
     'severity',
+    'location'
 ])
 
 
@@ -59,10 +59,16 @@ class Session:
         for rule in self._rules:
             rule.enable(root_ctx)
 
-        # TODO: Should report an issue instead of crashing on parse error
-        ast = parse_file(self._file)
+        try:
+            ast = parse_file(self._file)
+            root_ctx.traverse(ast)
 
-        root_ctx.traverse(ast)
+        except pglast.parser.ParseError as exc:
+            root_ctx.report(
+                rule=None,
+                node=None,
+                msg=exc.args[0],
+                location=exc.location)
 
         return self._issues
 
@@ -94,12 +100,13 @@ class LintContext:
 
             self._hooks[n].append(fn)
 
-    def report(self, rule, msg, node, verbose=None, severity='ERROR'):
+    def report(self, rule, msg, node, severity='ERROR', location=None):
         self._session.report_issue(LintIssue(
             rule=rule,
             msg=msg,
             node=node,
-            verbose=verbose,
             severity=severity,
-            file=None
+            location=location,
+            # This is filled in later
+            file=None,
         ))

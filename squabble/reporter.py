@@ -2,6 +2,7 @@ import functools
 import sys
 
 from colorama import Fore, Back, Style
+import pglast
 
 
 _REPORTERS = {}
@@ -33,6 +34,18 @@ def report(config, issues):
         fn(i, file_contents)
 
 
+def location_for_issue(issue):
+    """
+    Correctly return the offset into the file for this issue, or None if it
+    cannot be determined.
+    """
+
+    if issue.node and issue.node.location != pglast.Missing:
+        return issue.node.location.value
+
+    return issue.location
+
+
 def issue_to_file_location(issue, contents):
     """
     Given a `LintIssue` (which may or may not have a `pglast.Node` with a
@@ -40,10 +53,11 @@ def issue_to_file_location(issue, contents):
     the (line_str, line, column) that node is located at, or `('', 1, 0)`.
     """
 
-    if issue.node is None or not hasattr(issue.node, 'location'):
+    loc = location_for_issue(issue)
+
+    if loc is None:
         return ('', 1, 0)
 
-    loc = issue.node.location.value
     lines = contents.splitlines()
 
     for i, line in enumerate(lines, start=1):

@@ -49,7 +49,7 @@ def main():
 
     issues = []
     for file_name in migrations:
-        issues = lint_file(base_config, file_name)
+        issues += lint_file(base_config, file_name)
 
     reporter.report(base_config, issues)
 
