@@ -96,7 +96,7 @@ def extract_file_rules(text):
         'disable': [],
     }
 
-    comment_re = re.compile(r'--\s*(enable|disable):(\w+)(.*?)', re.I)
+    comment_re = re.compile(r'--\s*(enable|disable):(\w+)(.*?)$', re.I)
 
     for line in text.splitlines():
         line = line.strip()
