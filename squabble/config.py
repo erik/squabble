@@ -4,7 +4,7 @@ import os.path
 import re
 import subprocess
 
-from . import logger
+from squabble import logger
 
 
 Config = collections.namedtuple('Config', [
@@ -86,9 +86,9 @@ def extract_file_rules(text):
 
     Valid lines are SQL line comments that enable or disable specific rules.
 
-     >>> extract_file_rules('...\n-- enable:rule1 opt=foo arr=a,b,c')
-
-     {'disable': [], 'enable': {'rule1': {'opt': 'foo', 'arr': ['a','b','c']}}}
+    >>> rules = extract_file_rules('...\\n-- enable:rule1 opt=foo arr=a,b,c')
+    >>> rules == {'disable': [], 'enable': {'rule1': {'opt': 'foo', 'arr': ['a','b','c']}}}
+    True
     """
 
     rules = {
@@ -105,25 +105,39 @@ def extract_file_rules(text):
         if m is None:
             continue
 
-        action, rule, args = m.groups()
+        action, rule, opts = m.groups()
 
         if action == 'disable':
             rules['disable'].append(rule)
 
         elif action == 'enable':
-            options = {}
-
-            for opt in args.strip().split(' '):
-                if opt == '':
-                    continue
-
-                k, v = opt.split('=', 1)
-
-                if ',' in v:
-                    v = v.split(',')
-
-                options[k] = v
-
-            rules['enable'][rule] = options
+            rules['enable'][rule] = _parse_options(opts)
 
     return rules
+
+
+def _parse_options(opts):
+    """
+    Given a string of space-separated `key=value` pairs, return a dictionary of
+    `{"key": "value"}`. Note the value will always be returned as a string, and
+    no further parsing will be attempted.
+
+    >>> opts = _parse_options('k=v abc=1,2,3')
+    >>> opts == {'k': 'v', 'abc': ['1', '2', '3']}
+    True
+    """
+
+    options = {}
+
+    # Split the input into words and filter out empty strings
+    words = [w for w in opts.strip().split(' ') if w != '']
+
+    for opt in words:
+        k, v = opt.split('=', 1)
+
+        if ',' in v:
+            v = v.split(',')
+
+        options[k] = v
+
+    return options
