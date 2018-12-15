@@ -87,6 +87,7 @@ class Session:
 class LintContext:
     def __init__(self, session):
         self._hooks = {}
+        self._exit_hooks = []
         self._session = session
 
     def traverse(self, parent_node):
@@ -103,13 +104,17 @@ class LintContext:
                 # children can set up their own hooks, so recurse
                 child_ctx.traverse(node)
 
-    def register(self, nodes, fn):
-        """TODO: write me"""
-        for n in nodes:
-            if n not in self._hooks:
-                self._hooks[n] = []
+        for fn in self._exit_hooks:
+            fn(self)
 
-            self._hooks[n].append(fn)
+    def register_exit(self, fn):
+        self._exit_hooks.append(fn)
+
+    def register(self, node, fn):
+        if node not in self._hooks:
+            self._hooks[node] = []
+
+        self._hooks[node].append(fn)
 
     def report(self, rule, msg, node, severity='ERROR', location=None):
         self._session.report_issue(LintIssue(

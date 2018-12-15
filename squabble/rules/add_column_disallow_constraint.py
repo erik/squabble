@@ -57,7 +57,7 @@ class AddColumnDisallowConstraints(Rule):
         self._blocked_constraints = set(constraints)
 
     def enable(self, ctx):
-        ctx.register(['AlterTableCmd'], lambda c, n: self._check(c, n))
+        ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))
 
     def _check(self, ctx, node):
         """

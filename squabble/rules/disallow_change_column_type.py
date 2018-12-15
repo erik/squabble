@@ -1,4 +1,3 @@
-import pglast
 from pglast.enums import AlterTableType
 
 from squabble.rules import Rule
@@ -23,7 +22,7 @@ class DisallowChangeColumnType(Rule):
         self._opts = opts
 
     def enable(self, ctx):
-        ctx.register(['AlterTableCmd'], lambda c, n: self._check(c, n))
+        ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))
 
     def _check(self, ctx, node):
         """

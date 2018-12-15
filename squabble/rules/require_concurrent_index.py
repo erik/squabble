@@ -36,9 +36,9 @@ class RequireConcurrentIndex(Rule):
         # Keep track of CREATE TABLE statements if we're not including
         # them in our check.
         if not self._include_new:
-            ctx.register(['CreateStmt'], lambda c, n: self._create_table(c, n))
+            ctx.register('CreateStmt', lambda c, n: self._create_table(c, n))
 
-        ctx.register(['IndexStmt'], lambda c, n: self._create_index(c, n))
+        ctx.register('IndexStmt', lambda c, n: self._create_index(c, n))
 
     def _create_table(self, ctx, node):
         table = node.relation.relname.value.lower()
