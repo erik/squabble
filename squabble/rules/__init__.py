@@ -47,6 +47,10 @@ class Rule:
 
         return meta
 
+    @staticmethod
+    def all():
+        return Rule.REGISTRY.values()
+
     @classmethod
     def meta(cls):
         split_doc = (cls.__doc__ or '').strip().split('\n', 1)

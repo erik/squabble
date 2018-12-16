@@ -108,8 +108,8 @@ class LintContext:
                 # children can set up their own hooks, so recurse
                 child_ctx.traverse(node)
 
-        for fn in self._exit_hooks:
-            fn(self)
+        for exit_fn in self._exit_hooks:
+            exit_fn(self)
 
     def register_exit(self, fn):
         self._exit_hooks.append(fn)
