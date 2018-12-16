@@ -1,4 +1,5 @@
 -- enable:RequireConcurrentIndex
+-- >>> {"line": 10, "column": 24, "message_id": "index_not_concurrent"}
 
 CREATE TABLE foo(id uuid);
 

@@ -93,15 +93,15 @@ def _issue_info(issue, file_contents):
     formatted = _format_message(issue)
 
     return {
-        'line': line,
-        'line_num': line_num,
+        'line_text': line,
+        'line': line_num,
         'column': column,
         'message_formatted': formatted,
         **issue._asdict()
     }
 
 
-_SIMPLE_FORMAT = '{file}:{line_num}:{column} {severity}: {message_formatted}'
+_SIMPLE_FORMAT = '{file}:{line}:{column} {severity}: {message_formatted}'
 
 
 @reporter("plain")
@@ -111,7 +111,7 @@ def plain_text_reporter(issue, file_contents):
     _print_err(_SIMPLE_FORMAT.format(**info))
 
     if info['line'] != '':
-        _print_err(info['line'])
+        _print_err(info['line_text'])
         _print_err(' ' * info['column'] + '^')
         _print_err('')
 
@@ -127,7 +127,7 @@ def color_reporter(issue, file_contents):
         'reset': Style.RESET_ALL,
     }
 
-    fmt = '{bold}{file}:{reset}{line_num}:{column}{reset} '\
+    fmt = '{bold}{file}:{reset}{line}:{column}{reset} '\
         '{red}{severity}{reset}: {message_formatted}'
 
     _print_err(fmt.format(**{
@@ -137,6 +137,6 @@ def color_reporter(issue, file_contents):
 
     if info['line'] != '':
         arrow = ' ' * info['column'] + '👆'
-        _print_err(info['line'])
+        _print_err(info['line_text'])
         _print_err(arrow)
         _print_err('')

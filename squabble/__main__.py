@@ -42,7 +42,7 @@ def main():
         print('Could not find a valid config file!')
         sys.exit(1)
 
-    base_config = config.parse_config(config_file)
+    base_config = config.parse_config_file(config_file)
 
     # Load all of the rule classes into memory
     rules.load(plugins=base_config.plugins)

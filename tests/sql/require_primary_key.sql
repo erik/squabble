@@ -1,5 +1,5 @@
 -- enable:RequirePrimaryKey
--- >>> 14 13 missing_primary_key
+-- >>> {"line": 14, "column": 13, "message_id": "missing_primary_key"}
 
 CREATE TABLE inline_pk(
   pk int PRIMARY KEY

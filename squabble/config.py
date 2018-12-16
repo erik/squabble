@@ -42,10 +42,14 @@ def get_vcs_root():
         'echo ""')
 
 
-def parse_config(config_file):
+def parse_config_file(config_file):
     with open(config_file, 'r') as fp:
         obj = json.load(fp)
 
+    return parse_config(obj)
+
+
+def parse_config(obj):
     return Config(
         reporter=obj.get('reporter', 'plain'),
         plugins=obj.get('plugins', []),
