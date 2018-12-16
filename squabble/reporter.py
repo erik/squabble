@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import functools
 import sys
 
@@ -75,20 +77,31 @@ def _print_err(msg):
     print(msg, file=sys.stderr)
 
 
+def _format_message(issue):
+    if issue.message_text:
+        return issue.message_text
+
+    template = issue.rule.MESSAGES[issue.message_id]
+    params = issue.message_params or {}
+
+    return template.format(**params)
+
+
 def _issue_info(issue, file_contents):
     line, line_num, column = issue_to_file_location(issue, file_contents)
 
+    formatted = _format_message(issue)
+
     return {
-        'file': issue.file,
         'line': line,
         'line_num': line_num,
         'column': column,
-        'severity': issue.severity,
-        'msg': issue.msg
+        'message_formatted': formatted,
+        **issue._asdict()
     }
 
 
-_SIMPLE_FORMAT = '{file}:{line_num}:{column} {severity}: {msg}'
+_SIMPLE_FORMAT = '{file}:{line_num}:{column} {severity}: {message_formatted}'
 
 
 @reporter("plain")
@@ -115,7 +128,7 @@ def color_reporter(issue, file_contents):
     }
 
     fmt = '{bold}{file}:{reset}{line_num}:{column}{reset} '\
-        '{red}{severity}{reset}: {msg}'
+        '{red}{severity}{reset}: {message_formatted}'
 
     _print_err(fmt.format(**{
         **color,

@@ -35,7 +35,7 @@ class AddColumnDisallowConstraints(Rule):
     }
 
     MESSAGES = {
-        'constraint_not_allowed': 'column "{0}" has a disallowed constraint'
+        'constraint_not_allowed': 'column "{col}" has a disallowed constraint'
     }
 
     def __init__(self, opts):
@@ -88,6 +88,9 @@ class AddColumnDisallowConstraints(Rule):
         for constraint in constraints:
             if constraint.contype.value in self._blocked_constraints:
                 col = node['def'].colname.value
-                msg = self.MESSAGES['constraint_not_allowed'].format(col)
 
-                ctx.report(self, msg, node=constraint)
+                ctx.report(
+                    self,
+                    'constraint_not_allowed',
+                    params={'col': col},
+                    node=constraint)

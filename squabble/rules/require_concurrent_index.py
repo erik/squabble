@@ -25,7 +25,7 @@ class RequireConcurrentIndex(Rule):
     """
 
     MESSAGES = {
-        'index_not_concurrent': 'index "{0}" not created with `CONCURRENTLY`'
+        'index_not_concurrent': 'index "{name}" not created with `CONCURRENTLY`'
     }
 
     def __init__(self, opts):
@@ -62,6 +62,8 @@ class RequireConcurrentIndex(Rule):
         if table in self._tables:
             return
 
-        msg = self.MESSAGES['index_not_concurrent'].format(index_name)
-
-        ctx.report(self, msg, node=node.relation)
+        ctx.report(
+            self,
+            'index_not_concurrent',
+            params={'name': index_name},
+            node=node.relation)

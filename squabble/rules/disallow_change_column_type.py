@@ -15,7 +15,8 @@ class DisallowChangeColumnType(Rule):
     """
 
     MESSAGES = {
-        'change_type_not_allowed': 'cannot change type of existing column "{0}"'
+        'change_type_not_allowed': ('cannot change type of existing column '
+                                    '"{col}"')
     }
 
     def __init__(self, opts):
@@ -45,7 +46,9 @@ class DisallowChangeColumnType(Rule):
             return
 
         ty = node['def'].typeName
-        col = node.name.value
-        msg = self.MESSAGES['change_type_not_allowed'].format(col)
 
-        ctx.report(self, msg, node=ty)
+        ctx.report(
+            self,
+            'change_type_not_allowed',
+            params={'col': node.name.value},
+            node=ty)

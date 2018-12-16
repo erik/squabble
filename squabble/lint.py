@@ -9,13 +9,18 @@ from squabble.rules import Rule
 
 
 LintIssue = collections.namedtuple('LintIssue', [
-    'msg',
+    'message_id',
+    'message_text',
+    'message_params',
     'node',
     'file',
     'rule',
     'severity',
     'location'
 ])
+
+# Make all the fields nullable
+LintIssue.__new__.__defaults__ = (None,) * len(LintIssue._fields)
 
 
 def parse_file(file_name):
@@ -42,7 +47,7 @@ def check_file(config, file_name):
         rules = configure_rules(config.rules)
     except RuleConfigurationException as exc:
         return [LintIssue(
-            msg=exc.msg,
+            message_text=exc.msg,
             rule=exc.rule,
             node=None,
             file=file_name,
@@ -75,11 +80,10 @@ class Session:
             root_ctx.traverse(ast)
 
         except pglast.parser.ParseError as exc:
-            root_ctx.report(
-                rule=None,
-                node=None,
-                msg=exc.args[0],
-                location=exc.location)
+            root_ctx.report_issue(LintIssue(
+                message_text=exc.args[0],
+                location=exc.location
+            ))
 
         return self._issues
 
@@ -116,13 +120,16 @@ class LintContext:
 
         self._hooks[node].append(fn)
 
-    def report(self, rule, msg, node, severity='ERROR', location=None):
+    def report_issue(self, issue):
+        self._session.report_issue(issue)
+
+    def report(self, rule, message_id, params=None, node=None, severity='ERROR'):
         self._session.report_issue(LintIssue(
             rule=rule,
-            msg=msg,
+            message_id=message_id,
+            message_params=params,
             node=node,
             severity=severity,
-            location=location,
             # This is filled in later
             file=None,
         ))

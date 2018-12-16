@@ -16,7 +16,7 @@ class RequirePrimaryKey(Rule):
     """
 
     MESSAGES = {
-        'missing_primary_key': 'table "{0}" does not name a primary key'
+        'missing_primary_key': 'table "{tbl}" does not name a primary key'
     }
 
     def __init__(self, opts):
@@ -58,8 +58,8 @@ class RequirePrimaryKey(Rule):
 
         # Use the table's name as the reported error's location
         node = self._table.relation
-        table_name = node.relname.value
 
-        msg = self.MESSAGES['missing_primary_key'].format(table_name)
-
-        ctx.report(self, msg, node=node)
+        ctx.report(self,
+                   'missing_primary_key',
+                   params={'tbl': node.relname.value},
+                   node=node)
