@@ -129,19 +129,29 @@ def _parse_options(opts):
     >>> opts = _parse_options('k=v abc=1,2,3')
     >>> opts == {'k': 'v', 'abc': ['1', '2', '3']}
     True
+    >>> _parse_options('k="1,2","3,4"')
+    {'k': ['1,2', '3,4']}
     """
 
     options = {}
 
-    # Split the input into words and filter out empty strings
-    words = [w for w in opts.strip().split(' ') if w != '']
+    # Either a simple quoted string or a bare value
+    value = r'(?:(?:"([^"]+)")|([^,\s]+))'
 
-    for opt in words:
-        k, v = opt.split('=', 1)
+    # Value followed by zero or more values
+    value_list = r'{0}(?:,{0})*'.format(value)
 
-        if ',' in v:
-            v = v.split(',')
+    value_regex = re.compile(value)
+    kv_regex = re.compile(r'(\w+)=({0})'.format(value_list))
 
-        options[k] = v
+    # 'k=1,2' => ('k', '1,2')
+    for match in re.finditer(kv_regex, opts):
+        key, val = match.group(1, 2)
+
+        # value_regex will return ('string', '') or ('', 'value')
+        values = [a or b for a, b in re.findall(value_regex, val)]
+
+        # Collapse single len lists into scalars
+        options[key] = values[0] if len(values) == 1 else values
 
     return options

@@ -1,8 +1,6 @@
-''' TODO: description
-
+'''
 Usage:
-  squabble [options] FILES...
-  squabble [options]
+  squabble [options] [FILES...]
   squabble (-h | --help)
 
 Arguments:
