@@ -86,6 +86,7 @@ class RequireColumns(Rule):
 
     Otherwise, only the presence of the column will be checked.
 
+    Tags: correctness
     """
 
     MESSAGES = {

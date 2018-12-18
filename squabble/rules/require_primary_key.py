@@ -13,6 +13,8 @@ class RequirePrimaryKey(Rule):
         "rules": {
             "RequirePrimaryKey": {}
         }
+
+    Tags: performance, correctness
     """
 
     MESSAGES = {

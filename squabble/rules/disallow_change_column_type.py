@@ -12,6 +12,8 @@ class DisallowChangeColumnType(Rule):
         "rules": {
             "DisallowChangeColumnType": {}
         }
+
+    Tags: backwards-compatibility
     """
 
     MESSAGES = {

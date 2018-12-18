@@ -22,6 +22,8 @@ class RequireConcurrentIndex(Rule):
                 "include_new_tables": false
             }
         }
+
+    Tags: performance
     """
 
     MESSAGES = {
