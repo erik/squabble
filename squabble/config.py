@@ -1,4 +1,5 @@
 import collections
+import copy
 import json
 import os.path
 import re
@@ -64,7 +65,7 @@ def apply_file_config(base, file_name):
     """
 
     # Operate on a copy so we don't mutate the base config
-    config = base._asdict()
+    config = copy.deepcopy(base._asdict())
 
     rules = parse_file_rules(file_name)
 

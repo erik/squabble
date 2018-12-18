@@ -122,8 +122,7 @@ class RequireColumns(Rule):
             columns[name]['node'] = col
 
         ctx.register('ColumnDef', _attach_column_node)
-        ctx.register_exit(
-            lambda _ctx: self._check_required(_ctx, table, columns))
+        ctx.register_exit(lambda _ctx: self._check_required(_ctx, table, columns))
 
     def _check_required(self, ctx, table, columns):
         table_name = table.relname.value
