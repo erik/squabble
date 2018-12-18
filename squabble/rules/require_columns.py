@@ -111,27 +111,38 @@ class RequireColumns(Rule):
         ctx.register('CreateStmt', lambda c, n: self._check_create_table(c, n))
 
     def _check_create_table(self, ctx, node):
-        # TODO: We can do better location reporting here...
-        table_node = node.relation
-        table_name = table_node.relname.value
-        seen_columns = {}
+        table = node.relation
+        columns = {}
 
         for col, typ in _normalize_columns(node.tableElts):
-            seen_columns[col] = typ
+            columns[col] = {'type': typ, 'node': None}
+
+        def _attach_column_node(_ctx, col):
+            name = col.colname.value
+            columns[name]['node'] = col
+
+        ctx.register('ColumnDef', _attach_column_node)
+        ctx.register_exit(
+            lambda _ctx: self._check_required(_ctx, table, columns))
+
+    def _check_required(self, ctx, table, columns):
+        table_name = table.relname.value
 
         for col, typ in self._required.items():
-            if col not in seen_columns:
+            if col not in columns:
                 ctx.report(
                     self,
                     'missing_required_column',
                     params={'tbl': table_name, 'col': col},
-                    node=table_node)
+                    node=table)
+
                 continue
 
-            actual = seen_columns[col]
+            actual = columns[col]['type']
             if typ is not None and actual != typ:
+                node = columns[col]['node']
                 ctx.report(
                     self,
                     'column_wrong_type',
                     params={'tbl': table_name, 'col': col, 'required': typ, 'actual': actual},
-                    node=table_node)
+                    node=node)

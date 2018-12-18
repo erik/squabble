@@ -52,4 +52,5 @@ def test_snapshot(file_name):
         info = reporter._issue_info(i, contents)
 
         for k, v in e.items():
+            assert k in info
             assert info[k] == v
