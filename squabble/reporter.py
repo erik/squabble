@@ -110,7 +110,7 @@ def plain_text_reporter(issue, file_contents):
 
     _print_err(_SIMPLE_FORMAT.format(**info))
 
-    if info['line'] != '':
+    if info['line_text'] != '':
         _print_err(info['line_text'])
         _print_err(' ' * info['column'] + '^')
         _print_err('')
@@ -135,8 +135,7 @@ def color_reporter(issue, file_contents):
         **info
     }))
 
-    if info['line'] != '':
-        arrow = ' ' * info['column'] + '👆'
+    if info['line_text'] != '':
+        arrow = ' ' * info['column'] + '^'
         _print_err(info['line_text'])
-        _print_err(arrow)
-        _print_err('')
+        _print_err(Style.BRIGHT + arrow + Style.RESET_ALL)
