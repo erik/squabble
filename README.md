@@ -32,19 +32,6 @@ $ squabble --help
 
 ## Configuration
 
-``` console
-$ squabble -c path/to/config ...
-```
-
-If not explicitly given on the command line, squabble will look for a file
-named `.squabblerc` in the following places (in order):
-
- - `./.squabblerc`
- - `(git_repo_root)/.squabblerc`
- - `~/.squabblerc`
-
-### Example Configuration
-
 To see a list of rules, try
 
 ``` console
@@ -57,6 +44,19 @@ configuration options)
 ``` console
 $ squabble --show-rule AddColumnsDisallowConstraints
 ```
+
+``` console
+$ squabble -c path/to/config ...
+```
+
+If not explicitly given on the command line, squabble will look for a file
+named `.squabblerc` in the following places (in order):
+
+ - `./.squabblerc`
+ - `(git_repo_root)/.squabblerc`
+ - `~/.squabblerc`
+
+### Example Configuration
 
 ``` json
 {
