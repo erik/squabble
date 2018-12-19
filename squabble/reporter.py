@@ -107,13 +107,7 @@ _SIMPLE_FORMAT = '{file}:{line}:{column} {severity}: {message_formatted}'
 @reporter("plain")
 def plain_text_reporter(issue, file_contents):
     info = _issue_info(issue, file_contents)
-
     _print_err(_SIMPLE_FORMAT.format(**info))
-
-    if info['line_text'] != '':
-        _print_err(info['line_text'])
-        _print_err(' ' * info['column'] + '^')
-        _print_err('')
 
 
 @reporter('color')
