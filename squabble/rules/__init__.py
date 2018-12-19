@@ -1,14 +1,39 @@
 import glob
 import importlib
+import importlib.util as import_util
 import os.path
 
 from squabble import logger, UnknownRuleException
 
 
-def load(plugins):
-    if plugins != []:
-        raise NotImplementedError('no plugin support yet')
+def _load_plugin(directory):
+    """
+    Given an arbitrary directory, try to load all Python files in order
+    to register the custom rule definitions.
 
+    Nothing is done with the Python files once they're loaded, it is
+    assumed that simply importing the module will be enough to have the
+    side effect of registering the modules correctly.
+    """
+
+    logger.debug('trying to load "%s" as a plugin directory', directory)
+
+    if not os.path.isdir(directory):
+        raise NotADirectoryError('cannot load "%s": not a directory' % directory)
+
+    files = os.path.join(directory, '*.py')
+    pkg_name = os.path.basename(os.path.dirname(directory))
+
+    for file_name in glob.glob(files):
+        logger.debug('loading file "%s" to pkg "%s"', file_name, pkg_name)
+        spec = import_util.spec_from_file_location(pkg_name, file_name)
+
+        # Parse and execute the file
+        mod = import_util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+
+
+def load(plugins):
     modules = glob.glob(os.path.dirname(__file__) + '/*.py')
 
     for mod in modules:
@@ -18,6 +43,10 @@ def load(plugins):
             continue
 
         importlib.import_module(__name__ + '.' + mod_name)
+
+    # Import plugins last so their naming takes precedence
+    for plug in plugins:
+        _load_plugin(plug)
 
 
 class Rule:
@@ -35,7 +64,7 @@ class Rule:
         meta = cls.meta()
         name = meta['name']
 
-        logger.debug('registering class %s' % name)
+        logger.debug('registering rule "%s"', name)
 
         Rule.REGISTRY[name] = {'class': cls, 'meta': meta}
 
