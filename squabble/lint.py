@@ -81,6 +81,7 @@ class Session:
 
         except pglast.parser.ParseError as exc:
             root_ctx.report_issue(LintIssue(
+                severity='ERROR',
                 message_text=exc.args[0],
                 location=exc.location
             ))
