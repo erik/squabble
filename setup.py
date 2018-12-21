@@ -7,7 +7,7 @@ __version__ = '0.0.0'
 setup(
     name='squabble',
     version=__version__,
-    description='TODO',
+    description='An extensible linter for SQL',
     author='Erik Price',
     url='https://github.com/erik/squabble',
     packages=['squabble'],
