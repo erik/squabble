@@ -9,12 +9,15 @@ Arguments:
 Options:
   -c --config=PATH     Path to configuration file
   -h --help            Show this screen
+  -p --preset=PRESET   Start with a base preset rule configuration
+  -P --list-presets    List the available preset configurations
   -r --show-rule=RULE  Show detailed information about RULE
   -R --list-rules      Print out information about all available rules
   -V --verbose         Turn on debug level logging
   -v --version         Show version information
 '''
 
+import json
 import os.path
 import sys
 from pkg_resources import get_distribution
@@ -24,11 +27,7 @@ import docopt
 from colorama import Fore, Back, Style
 
 import squabble
-from squabble import config
-from squabble import lint
-from squabble import logger
-from squabble import rules
-from squabble import reporter
+from squabble import config, lint, logger, rules, reporter
 
 
 def main():
@@ -40,12 +39,16 @@ def main():
 
     migrations = args['FILES']
     config_file = args['--config'] or config.discover_config_location()
+    preset = args['--preset']
 
-    if config_file is None or not os.path.exists(config_file):
+    if args['--list-presets']:
+        return list_presets()
+
+    if not config_file or not os.path.exists(config_file):
         print('Could not find a valid config file!')
         sys.exit(1)
 
-    base_config = config.parse_config_file(config_file)
+    base_config = config.parse_config_file(config_file, preset)
 
     # Load all of the rule classes into memory
     rules.load(plugin_paths=base_config.plugins)
@@ -53,7 +56,7 @@ def main():
     if args['--list-rules']:
         return list_rules()
     elif args['--show-rule']:
-        return show_rule(args['--show-rule'])
+        return show_rule(name=args['--show-rule'])
 
     issues = []
     for file_name in migrations:
@@ -108,6 +111,22 @@ def list_rules():
             **color,
             **meta
         }))
+
+
+def list_presets():
+    for name, preset in config.PRESETS.items():
+        print('{bold}{name}{reset} - {description}'.format(
+            name=name,
+            description=preset.get('description', ''),
+            bold=Style.BRIGHT,
+            reset=Style.RESET_ALL
+        ))
+
+        # npm here i come
+        left_pad = '    '
+        cfg = json.dumps(preset['config'], indent=4)\
+                  .replace('\n', '\n' + left_pad)
+        print(left_pad + cfg)
 
 
 if __name__ == '__main__':

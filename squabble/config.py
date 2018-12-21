@@ -15,6 +15,26 @@ Config = collections.namedtuple('Config', [
 ])
 
 
+# TODO: Move these out somewhere else, feels gross to have them hardcoded.
+PRESETS = {
+    'postgres': {
+        'description': ('A sane set of defaults that checks for obviously '
+                        'dangerous Postgres migrations.'),
+        'config': {
+            'rules': {
+                'AddColumnDisallowConstraint': {
+                    'disallowed': ['DEFAULT', 'NOT NULL', 'UNIQUE']
+                },
+                'RequirePrimaryKey': {},
+                'RequireConcurrentIndex': {},
+                'DisallowChangeEnumValue': {},
+                'DisallowChangeColumnType': {},
+            }
+        }
+    }
+}
+
+
 def discover_config_location():
     logger.debug('No config file given, trying to discover')
 
@@ -43,7 +63,9 @@ def get_vcs_root():
         'echo ""')
 
 
-def parse_config_file(config_file):
+def parse_config_file(config_file, _preset):
+    # TODO: handle preset
+
     with open(config_file, 'r') as fp:
         obj = json.load(fp)
 
