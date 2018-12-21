@@ -40,28 +40,24 @@ class AddColumnDisallowConstraints(Rule):
         'constraint_not_allowed': 'column "{col}" has a disallowed constraint'
     }
 
-    def __init__(self, opts):
-        if 'disallowed' not in opts or opts['disallowed'] == []:
-            raise RuleConfigurationException(
-                self, 'must specify `disallowed` constraints')
+    def enable(self, ctx):
+        disallowed = self._options.get('disallowed', [])
+        if disallowed == []:
+            raise RuleConfigurationException(self, 'must specify `disallowed` constraints')
 
-        constraints = []
+        constraints = set()
 
-        for c in opts['disallowed']:
+        for c in disallowed:
             ty = self.CONSTRAINT_MAP[c.upper()]
             if ty is None:
-                raise RuleConfigurationException(
-                    self, 'unknown constraint: `%s`' % c)
+                raise RuleConfigurationException(self, 'unknown constraint: `%s`' % c)
 
-            constraints.append(ty)
+            constraints.add(ty)
 
-        self._opts = opts
-        self._blocked_constraints = set(constraints)
+        ctx.register('AlterTableCmd', self._check(constraints))
 
-    def enable(self, ctx):
-        ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))
-
-    def _check(self, ctx, node):
+    @Rule.node_visitor
+    def _check(self, ctx, node, disallowed_constraints):
         """
         Node is an `AlterTableCmd`:
 
@@ -88,7 +84,7 @@ class AddColumnDisallowConstraints(Rule):
             return
 
         for constraint in constraints:
-            if constraint.contype.value in self._blocked_constraints:
+            if constraint.contype.value in disallowed_constraints:
                 col = node['def'].colname.value
 
                 ctx.report(

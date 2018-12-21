@@ -48,7 +48,7 @@ def main():
     base_config = config.parse_config_file(config_file)
 
     # Load all of the rule classes into memory
-    rules.load(plugins=base_config.plugins)
+    rules.load(plugin_paths=base_config.plugins)
 
     if args['--list-rules']:
         return list_rules()
@@ -59,7 +59,11 @@ def main():
     for file_name in migrations:
         issues += lint_file(base_config, file_name)
 
-    reporter.report(base_config, issues)
+    reporter.report(base_config.reporter, issues)
+
+    # Make sure we have an error status if something went wrong.
+    if issues:
+        sys.exit(1)
 
 
 def lint_file(base_config, file_name):
@@ -74,7 +78,7 @@ def show_rule(name):
     }
 
     try:
-        rule = rules.Rule.get(name)
+        rule = rules.Registry.get_meta(name)
     except squabble.UnknownRuleException:
         print('{bold}Unknown rule:{reset} {name}'.format(**{
             'name': name,
@@ -95,7 +99,7 @@ def list_rules():
         'reset': Style.RESET_ALL,
     }
 
-    all_rules = sorted(rules.Rule.all(), key=lambda r: r['meta']['name'])
+    all_rules = sorted(rules.Registry.all(), key=lambda r: r['meta']['name'])
 
     for rule in all_rules:
         meta = rule['meta']

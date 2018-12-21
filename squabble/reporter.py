@@ -6,11 +6,29 @@ import sys
 from colorama import Fore, Back, Style
 import pglast
 
+import squabble
+
 
 _REPORTERS = {}
 
 
+class UnknownReporterException(squabble.SquabbleException):
+    def __init__(self, name):
+        super().__init__('unknown reporter: "%s"' % name)
+
+
 def reporter(name):
+    """
+    Decorator to register function as a callback when the config sets the
+    `"reporter"` config value to `name`.
+
+    The wrapped function will be called with each `LintIssue` and the
+    contents of the file being linted.
+
+    >>> @reporter('json')
+    ... def reporter(issue, file_contents):
+    ...     print(json.dumps(issue._asdict()))
+    """
     def wrapper(fn):
         _REPORTERS[name] = fn
 
@@ -22,8 +40,15 @@ def reporter(name):
     return wrapper
 
 
-def report(config, issues):
-    fn = _REPORTERS[config.reporter]
+def report(reporter_name, issues):
+    """
+    Call the named reporter function for every issue in the list of issues.
+    """
+
+    if reporter_name not in _REPORTERS:
+        raise UnknownReporterException(reporter_name)
+
+    fn = _REPORTERS[reporter_name]
     files = {}
 
     for i in issues:
@@ -89,7 +114,6 @@ def _format_message(issue):
 
 def _issue_info(issue, file_contents):
     line, line_num, column = issue_to_file_location(issue, file_contents)
-
     formatted = _format_message(issue)
 
     return {
@@ -103,6 +127,14 @@ def _issue_info(issue, file_contents):
 
 _SIMPLE_FORMAT = '{file}:{line}:{column} {severity}: {message_formatted}'
 
+# Partially pre-format the message since the color codes will be static.
+_COLOR_FORMAT = '{bold}{{file}}:{reset}{{line}}:{{column}}{reset} '\
+    '{red}{{severity}}{reset}: {{message_formatted}}'.format(**{
+        'bold': Style.BRIGHT,
+        'red': Fore.RED,
+        'reset': Style.RESET_ALL,
+    })
+
 
 @reporter("plain")
 def plain_text_reporter(issue, file_contents):
@@ -114,20 +146,7 @@ def plain_text_reporter(issue, file_contents):
 def color_reporter(issue, file_contents):
     info = _issue_info(issue, file_contents)
 
-    color = {
-        'bold': Style.BRIGHT,
-        'red': Fore.RED,
-        'white': Fore.WHITE,
-        'reset': Style.RESET_ALL,
-    }
-
-    fmt = '{bold}{file}:{reset}{line}:{column}{reset} '\
-        '{red}{severity}{reset}: {message_formatted}'
-
-    _print_err(fmt.format(**{
-        **color,
-        **info
-    }))
+    _print_err(_COLOR_FORMAT.format(**info))
 
     if info['line_text'] != '':
         arrow = ' ' * info['column'] + '^'

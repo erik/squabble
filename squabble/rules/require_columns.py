@@ -26,11 +26,11 @@ def split_required_col(req):
 
 def _normalize_columns(table_elts):
     """
-    # >>> import pglast.printer
-    # >>> create_table = pglast.parse_sql('CREATE TABLE _(col1 foo.bar(baz,123), col2 integer);')
-    # >>> table_elts = pglast.Node(create_table)[0].stmt.tableElts
-    # >>> _normalize_columns(table_elts)
-    # [('col1', 'foo.bar(baz, 123)'), ('col2', 'integer')]
+    >>> import pglast.printer
+    >>> create_table = pglast.parse_sql('CREATE TABLE _(col1 foo.bar(baz,123), col2 integer);')
+    >>> table_elts = pglast.Node(create_table)[0].stmt.tableElts
+    >>> _normalize_columns(table_elts)
+    [('col1', 'foo.bar(baz, 123)'), ('col2', 'integer')]
     """
 
     # This is a pretty hacky implementation
@@ -69,6 +69,28 @@ def parse_column_type(typ):
             RequireColumns, 'unable to parse column type "%s' % typ)
 
 
+def get_required_columns(config):
+    """
+    Extracts the column name and normalizes types out of the config
+    value for `RequireColumns`.
+
+    >>> get_required_columns(['foo,int', 'bar'])
+    {'foo': 'integer', 'bar': None}
+    """
+    if not config:
+        raise RuleConfigurationException(
+            RequireColumns, 'must provide `required` columns')
+
+    required = {}
+    for req in config:
+        column, type_str = split_required_col(req)
+        typ = parse_column_type(type_str) if type_str else None
+
+        required[column] = typ
+
+    return required
+
+
 class RequireColumns(Rule):
     """
     Require that newly created tables have specified columns.
@@ -94,24 +116,13 @@ class RequireColumns(Rule):
         'column_wrong_type': '"{tbl}.{col}" has type "{actual}" expected "{required}"'
     }
 
-    def __init__(self, opts):
-        required = opts.get('required', [])
-
-        if not required:
-            raise RuleConfigurationException(
-                self, 'must provide `required` columns')
-
-        self._required = {}
-        for req in required:
-            column, type_str = split_required_col(req)
-            typ = parse_column_type(type_str) if type_str else None
-
-            self._required[column] = typ
-
     def enable(self, ctx):
-        ctx.register('CreateStmt', lambda c, n: self._check_create_table(c, n))
+        config = self._options.get('required', [])
+        cols = get_required_columns(config)
+        ctx.register('CreateStmt', self._check_create_table(cols))
 
-    def _check_create_table(self, ctx, node):
+    @Rule.node_visitor
+    def _check_create_table(self, ctx, node, required):
         table = node.relation
         columns = {}
 
@@ -123,12 +134,13 @@ class RequireColumns(Rule):
             columns[name]['node'] = col
 
         ctx.register('ColumnDef', _attach_column_node)
-        ctx.register_exit(lambda _ctx: self._check_required(_ctx, table, columns))
+        ctx.register_exit(
+            lambda _ctx: self._check_required(_ctx, table, columns, required))
 
-    def _check_required(self, ctx, table, columns):
+    def _check_required(self, ctx, table, columns, required):
         table_name = table.relname.value
 
-        for col, typ in self._required.items():
+        for col, typ in required.items():
             if col not in columns:
                 ctx.report(
                     self,
@@ -144,5 +156,10 @@ class RequireColumns(Rule):
                 ctx.report(
                     self,
                     'column_wrong_type',
-                    params={'tbl': table_name, 'col': col, 'required': typ, 'actual': actual},
-                    node=node)
+                    node=node,
+                    params={
+                        'tbl': table_name,
+                        'col': col,
+                        'required': typ,
+                        'actual': actual
+                    })

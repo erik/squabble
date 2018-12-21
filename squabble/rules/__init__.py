@@ -1,3 +1,4 @@
+import functools
 import glob
 import importlib
 import importlib.util as import_util
@@ -33,7 +34,8 @@ def _load_plugin(directory):
         spec.loader.exec_module(mod)
 
 
-def load(plugins):
+def _load_builtin_rules():
+    """Load the rules that ship with squabble (squabble/rules/*.py)"""
     modules = glob.glob(os.path.dirname(__file__) + '/*.py')
 
     for mod in modules:
@@ -44,44 +46,96 @@ def load(plugins):
 
         importlib.import_module(__name__ + '.' + mod_name)
 
+
+def load(plugin_paths=[]):
+    """
+    Load built in rules as well as any custom rules contained in the
+    directories in `plugin_paths`.
+    """
+
+    _load_builtin_rules()
+
     # Import plugins last so their naming takes precedence
-    for plug in plugins:
-        _load_plugin(plug)
+    for path in plugin_paths:
+        _load_plugin(path)
+
+
+class Registry:
+    """Singleton instance used to keep track of all rules"""
+    _REGISTRY = {}
+
+    @staticmethod
+    def register(rule):
+        meta = rule.meta()
+        name = meta['name']
+
+        logger.debug('registering rule "%s"', name)
+
+        Registry._REGISTRY[name] = {'class': rule, 'meta': meta}
+
+    @staticmethod
+    def get_meta(name):
+        """Return metadata about a given rule in the registry"""
+        if name not in Registry._REGISTRY:
+            raise UnknownRuleException(name)
+
+        return Registry._REGISTRY[name]
+
+    @staticmethod
+    def all():
+        """
+        Return an iterator over all known Rule metadata. Equivalent to calling
+        `Registry.get(name)` for all registered rules.
+        """
+        return Registry._REGISTRY.values()
 
 
 class Rule:
-    REGISTRY = {}
-
     def __init__(self, options):
         self._options = options
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        Rule._register(cls)
+        Registry.register(cls)
 
     @staticmethod
-    def _register(cls):
-        meta = cls.meta()
-        name = meta['name']
+    def node_visitor(fn):
+        """
+        Helper decorator to make it easier to register callbacks for AST
+        nodes. Effectively creates the partial function automatically so
+        there's no need for a lambda.
 
-        logger.debug('registering rule "%s"', name)
+        Wraps `fn` to pass in `self`, `context`, and `node` when the callback
+        is called.
 
-        Rule.REGISTRY[name] = {'class': cls, 'meta': meta}
+        >>> class SomeRule(Rule):
+        ...     def enable(ctx):
+        ...         # These are equivalent
+        ...         ctx.register('foo', self.check_foo(x=1))
+        ...         ctx.register('bar', lambda c, n: self.check_bar(c, n, x=1))
+        ...
+        ...     @Rule.node_visitor
+        ...     def check_foo(self, context, node, x):
+        ...         pass
+        ...
+        ...     def check_bar(self, context, node, x):
+        ...         pass
+        """
 
-    @staticmethod
-    def get(name):
-        meta = Rule.REGISTRY.get(name)
-        if meta is None:
-            raise UnknownRuleException('no rule named "%s"' % name)
+        def wrapper(self, *args, **kwargs):
+            @functools.wraps(fn)
+            def inner(context, node):
+                return fn(self, context, node, *args, **kwargs)
+            return inner
 
-        return meta
-
-    @staticmethod
-    def all():
-        return Rule.REGISTRY.values()
+        return wrapper
 
     @classmethod
     def meta(cls):
+        """
+        Return metadata about the Rule. Base implementation should be sane
+        enough for most purposes.
+        """
         split_doc = (cls.__doc__ or '').strip().split('\n', 1)
 
         return {

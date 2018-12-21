@@ -1,5 +1,4 @@
 import pglast
-from pglast.enums import AlterTableType, ConstrType
 
 from squabble import logger
 

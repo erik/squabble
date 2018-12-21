@@ -16,4 +16,5 @@ class RuleConfigurationException(SquabbleException):
 
 
 class UnknownRuleException(SquabbleException):
-    pass
+    def __init__(self, name):
+        super().__init__('unknown rule: "%s"' % name)

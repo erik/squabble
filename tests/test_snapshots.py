@@ -13,7 +13,7 @@ OUTPUT_MARKER = '-- >>> '
 
 
 def setup_module(_mod):
-    rules.load(plugins=[])
+    rules.load(plugin_paths=[])
 
 
 def expected_output(file_name):

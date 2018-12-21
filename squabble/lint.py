@@ -5,7 +5,7 @@ import collections
 import pglast
 
 from squabble import RuleConfigurationException
-from squabble.rules import Rule
+from squabble.rules import Registry
 
 
 LintIssue = collections.namedtuple('LintIssue', [
@@ -34,7 +34,7 @@ def configure_rules(rule_config):
     rules = []
 
     for name, options in rule_config.items():
-        meta = Rule.get(name)
+        meta = Registry.get_meta(name)
         cls = meta['class']
 
         rules.append(cls(options))
