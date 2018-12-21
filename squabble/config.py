@@ -87,17 +87,17 @@ def apply_file_config(base, file_name):
     """
 
     # Operate on a copy so we don't mutate the base config
-    config = copy.deepcopy(base._asdict())
+    file_rules = copy.deepcopy(base.rules)
 
     rules = parse_file_rules(file_name)
 
     for rule, opts in rules['enable'].items():
-        config['rules'][rule] = opts
+        file_rules[rule] = opts
 
     for rule in rules['disable']:
-        del config['rules'][rule]
+        del file_rules[rule]
 
-    return Config(**config)
+    return base._replace(rules=file_rules)
 
 
 def parse_file_rules(file_name):
