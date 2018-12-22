@@ -44,11 +44,11 @@ def main():
     if args['--list-presets']:
         return list_presets()
 
-    if not config_file or not os.path.exists(config_file):
+    if config_file and not os.path.exists(config_file):
         print('Could not find a valid config file!')
         sys.exit(1)
 
-    base_config = config.parse_config_file(config_file, preset)
+    base_config = config.load_config(config_file, preset)
 
     # Load all of the rule classes into memory
     rules.load(plugin_paths=base_config.plugins)

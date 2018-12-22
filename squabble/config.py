@@ -5,7 +5,7 @@ import os.path
 import re
 import subprocess
 
-from squabble import logger
+from squabble import logger, SquabbleException
 
 
 Config = collections.namedtuple('Config', [
@@ -16,23 +16,34 @@ Config = collections.namedtuple('Config', [
 
 
 # TODO: Move these out somewhere else, feels gross to have them hardcoded.
+DEFAULT_CONFIG = dict(
+    reporter='plain',
+    plugins=[],
+    rules={}
+)
+
 PRESETS = {
     'postgres': {
         'description': ('A sane set of defaults that checks for obviously '
                         'dangerous Postgres migrations.'),
         'config': {
             'rules': {
-                'AddColumnDisallowConstraint': {
+                'AddColumnDisallowConstraints': {
                     'disallowed': ['DEFAULT', 'NOT NULL', 'UNIQUE']
                 },
                 'RequirePrimaryKey': {},
                 'RequireConcurrentIndex': {},
-                'DisallowChangeEnumValue': {},
+                'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
             }
         }
     }
 }
+
+
+class UnknownPresetException(SquabbleException):
+    def __init__(self, preset):
+        super().__init__('unknown preset: "%s"' % preset)
 
 
 def discover_config_location():
@@ -63,20 +74,41 @@ def get_vcs_root():
         'echo ""')
 
 
-def parse_config_file(config_file, _preset):
-    # TODO: handle preset
+def get_base_config(preset_name=None):
+    """Return a basic config value that can be overridden by users."""
+
+    if not preset_name:
+        return Config(**DEFAULT_CONFIG)
+
+    if preset_name not in PRESETS:
+        raise UnknownPresetException(preset_name)
+
+    return Config(**{
+        **DEFAULT_CONFIG,
+        **PRESETS[preset_name]['config']
+    })
+
+
+def parse_config_file(config_file):
+    if not config_file:
+        return {}
 
     with open(config_file, 'r') as fp:
-        obj = json.load(fp)
-
-    return parse_config(obj)
+        return json.load(fp)
 
 
-def parse_config(obj):
+def load_config(config_file, preset_name=None):
+    base = get_base_config(preset_name)
+    config = parse_config_file(config_file)
+
+    rules = copy.deepcopy(base.rules)
+    for name, rule in config.get('rules', {}).items():
+        rules[name] = rule
+
     return Config(
-        reporter=obj.get('reporter', 'plain'),
-        plugins=obj.get('plugins', []),
-        rules=obj.get('rules',  {}),
+        reporter=config.get('reporter', base.reporter),
+        plugins=config.get('plugins', base.plugins),
+        rules=rules
     )
 
 

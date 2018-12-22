@@ -41,7 +41,7 @@ def test_snapshot(file_name):
     if not expected:
         pytest.skip('no output configured')
 
-    base_cfg = config.parse_config({})
+    base_cfg = config.get_base_config()
     cfg = config.apply_file_config(base_cfg, file_name)
 
     issues = lint.check_file(cfg, file_name)
