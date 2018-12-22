@@ -29,24 +29,26 @@ class RequireConcurrentIndex(Rule):
         'index_not_concurrent': 'index "{name}" not created with `CONCURRENTLY`'
     }
 
-    def __init__(self, opts):
-        self._include_new = opts.get('include_new_tables', False)
-        self._tables = set()
-
     def enable(self, ctx):
+        include_new = self._options.get('include_new_tables', False)
+        tables = set()
+
         # Keep track of CREATE TABLE statements if we're not including
         # them in our check.
-        if not self._include_new:
-            ctx.register('CreateStmt', lambda c, n: self._create_table(c, n))
+        if not include_new:
+            ctx.register('CreateStmt', self._create_table(tables))
 
-        ctx.register('IndexStmt', lambda c, n: self._create_index(c, n))
+        ctx.register('IndexStmt', self._create_index(tables))
 
-    def _create_table(self, ctx, node):
+    @Rule.node_visitor
+    def _create_table(self, ctx, node, tables):
         table = node.relation.relname.value.lower()
         logger.debug('found a new table: %s', table)
-        self._tables.add(table)
 
-    def _create_index(self, ctx, node):
+        tables.add(table)
+
+    @Rule.node_visitor
+    def _create_index(self, ctx, node, tables):
         index_name = 'unnamed'
         if node.idxname != pglast.Missing:
             index_name = node.idxname.value
@@ -60,7 +62,7 @@ class RequireConcurrentIndex(Rule):
         table = node.relation.relname.value.lower()
 
         # This is a new table, don't alert on it
-        if table in self._tables:
+        if table in tables:
             return
 
         ctx.report(

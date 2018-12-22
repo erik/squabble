@@ -20,12 +20,10 @@ class DisallowRenameEnumValue(Rule):
         'rename_not_allowed': 'cannot rename existing enum value "{value}"'
     }
 
-    def __init__(self, opts):
-        self._opts = opts
-
     def enable(self, ctx):
-        ctx.register('AlterEnumStmt', lambda c, n: self._check_enum(c, n))
+        ctx.register('AlterEnumStmt', self._check_enum())
 
+    @Rule.node_visitor
     def _check_enum(self, ctx, node):
         """
         Node is an 'AlterEnumStmt' value

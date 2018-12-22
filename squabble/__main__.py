@@ -24,7 +24,7 @@ from pkg_resources import get_distribution
 
 import colorama
 import docopt
-from colorama import Fore, Back, Style
+from colorama import Style
 
 import squabble
 from squabble import config, lint, logger, rules, reporter
