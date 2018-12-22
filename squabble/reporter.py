@@ -1,9 +1,10 @@
 # coding: utf-8
 
 import functools
+import json
 import sys
 
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 import pglast
 
 import squabble
@@ -138,12 +139,14 @@ _COLOR_FORMAT = '{bold}{{file}}:{reset}{{line}}:{{column}}{reset} '\
 
 @reporter("plain")
 def plain_text_reporter(issue, file_contents):
+    """Simple single-line output format that is easily parsed by editors."""
     info = _issue_info(issue, file_contents)
     _print_err(_SIMPLE_FORMAT.format(**info))
 
 
 @reporter('color')
 def color_reporter(issue, file_contents):
+    """Extension of `plain`, uses ANSI color and shows error location."""
     info = _issue_info(issue, file_contents)
 
     _print_err(_COLOR_FORMAT.format(**info))
@@ -152,3 +155,23 @@ def color_reporter(issue, file_contents):
         arrow = ' ' * info['column'] + '^'
         _print_err(info['line_text'])
         _print_err(Style.BRIGHT + arrow + Style.RESET_ALL)
+
+
+@reporter('json')
+def json_reporter(issue, file_contents):
+    """Dump each issue as a JSON dictionary"""
+
+    # Use the rule's name for serialization
+    if issue.rule:
+        issue = issue._replace(rule=issue.rule.meta()['name'])
+
+    # pglast nodes aren't JSON serializable
+    if issue.node:
+        issue = issue._replace(node=issue.node.parse_tree)
+
+    obj = {
+        k: v for k, v in issue._asdict().items()
+        if v is not None
+    }
+
+    _print_err(json.dumps(obj))
