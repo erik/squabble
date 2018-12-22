@@ -69,7 +69,7 @@ named `.squabblerc` in the following places (in order):
 
 ``` json
 {
-  "reporter": "color|plain",
+  "reporter": "color",
 
   "plugins": [
     "/some/directory/with/custom/rules"
@@ -118,27 +118,26 @@ class AllTablesMustBeLoud(Rule):
         'table_not_loud_enough': 'table "{name}" not LOUD ENOUGH'
     }
 
-    def __init__(self, options):
-        """
-        Each linter is initialized once per file that it is being run
-        against. `options` will contain the merged base configuration
-        with the file-specific configuration options for this linter.
-        """
-        pass
-
     def enable(self, root_ctx):
         """
         Called before the root AST node is traversed. Here's where most
         callbacks should be registered for different AST nodes.
+
+        Each linter is initialized once per file that it is being run
+        against. `self._options` will contain the merged base configuration
+        with the file-specific configuration options for this linter.
         """
 
         # Register that any time we see a `CreateStmt` (`CREATE TABLE`), call
         # self._check()
-        root_ctx.register('CreateStmt', lambda ctx, node: self._check(ctx, node))
+        root_ctx.register('CreateStmt', self._check_create())
 
         # When we exit the root `ctx`, call `self._on_finish()`
         root_ctx.register_exit(lambda ctx: self._on_finish(ctx))
 
+    # node_visitor will pass in `ctx, node` for you so there's no need to
+    # use a lambda
+    @Rule.node_visitor
     def _check(self, ctx, node):
         """
         Called when we enter a 'CreateStmt' node. Here we can register more
