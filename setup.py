@@ -13,7 +13,7 @@ setup(
     packages=['squabble'],
     entry_points={
         'console_scripts': [
-            'squabble = squabble:main',
+            'squabble = squabble.__main__:main',
         ],
     },
     license='GPLv3+',
