@@ -105,7 +105,7 @@ source listing, or, more readably, the
 [Python bindings](https://github.com/lelit/pglast/tree/master/pglast/enums).
 
 ``` python
-from squabble import rule
+from squabble.rules import Rule
 
 class AllTablesMustBeLoud(Rule):
     """
