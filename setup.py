@@ -21,5 +21,10 @@ setup(
         'pglast==1.1',
         'docopt==0.6.2',
         'colorama==0.4.1'
+    ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: SQL'
     ]
 )
