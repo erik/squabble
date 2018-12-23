@@ -7,6 +7,6 @@ python:
   - 3.7
 install:
   - python setup.py develop
-  - pip install pytest
+  - pip install pytest pytest-cov
 script:
-  - python -m pytest -v tests squabble --doctest-modules --disable-warnings
+  - python -m pytest -v tests squabble --doctest-modules --disable-warnings --cov=squabble
