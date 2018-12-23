@@ -71,7 +71,7 @@ named `.squabblerc` in the following places (in order):
 {
   "reporter": "color",
 
-  "plugins": g
+  "plugins": [
     "/some/directory/with/custom/rules"
   ],
 
