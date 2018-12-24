@@ -1,10 +1,12 @@
 '''
 Usage:
-  squabble [options] [FILES...]
+  squabble [options] [PATHS...]
   squabble (-h | --help)
 
 Arguments:
-  FILES              One or more files to lint
+  PATHS                Files or directories to lint. If given a directory, will
+                       recursively traverse the path and lint all files ending
+                       in `.sql`
 
 Options:
   -c --config=PATH     Path to configuration file
@@ -17,6 +19,7 @@ Options:
   -v --version         Show version information
 '''
 
+import glob
 import json
 import os.path
 import sys
@@ -37,7 +40,7 @@ def main():
     if args['--verbose']:
         logger.setLevel('DEBUG')
 
-    migrations = args['FILES']
+    paths = args['PATHS']
     config_file = args['--config'] or config.discover_config_location()
     preset = args['--preset']
 
@@ -58,8 +61,10 @@ def main():
     elif args['--show-rule']:
         return show_rule(name=args['--show-rule'])
 
+    files = collect_files(paths)
+
     issues = []
-    for file_name in migrations:
+    for file_name in files:
         issues += lint_file(base_config, file_name)
 
     reporter.report(base_config.reporter, issues)
@@ -72,6 +77,24 @@ def main():
 def lint_file(base_config, file_name):
     file_config = config.apply_file_config(base_config, file_name)
     return lint.check_file(file_config, file_name)
+
+
+def collect_files(paths):
+    files = []
+
+    for path in map(os.path.expanduser, paths):
+        if not os.path.exists(path):
+            logger.error('%s: no such file or directory', path)
+            sys.exit(1)
+
+        elif os.path.isdir(path):
+            sql = os.path.join(path, '**/*.sql')
+            files.extend(glob.iglob(sql, recursive=True))
+
+        else:
+            files.append(path)
+
+    return files
 
 
 def show_rule(name):
