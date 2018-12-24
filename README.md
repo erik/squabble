@@ -27,7 +27,14 @@ specific to other databases are appreciated!
 
 ## Installation
 
-Not on PyPI yet, so for now, have to go from source.
+``` console
+$ pip3 install squabble
+$ squabble --help
+```
+
+> Note: Squabble is only supported on Python 3.5+
+
+If you'd like to install from source:
 
 ``` console
 $ git clone https://github.com/erik/squabble.git && cd squabble

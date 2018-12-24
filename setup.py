@@ -16,6 +16,7 @@ setup(
             'squabble = squabble.__main__:main',
         ],
     },
+    python_requires='>=3.5',
     license='GPLv3+',
     install_requires=[
         'pglast==1.1',
