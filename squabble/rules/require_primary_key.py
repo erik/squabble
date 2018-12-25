@@ -51,7 +51,6 @@ class RequirePrimaryKey(Rule):
         Make sure we've seen a primary key constraint by the time the
         `CREATE TABLE` statement is finished.
         """
-
         if seen_pk:
             return
 

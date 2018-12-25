@@ -76,7 +76,6 @@ def get_vcs_root():
 
 def get_base_config(preset_name=None):
     """Return a basic config value that can be overridden by users."""
-
     if not preset_name:
         return Config(**DEFAULT_CONFIG)
 
@@ -115,9 +114,8 @@ def load_config(config_file, preset_name=None):
 def apply_file_config(base, file_name):
     """
     Given a base configuration object and a file, return a new config that
-    applies any file-specific rule additions/deletions
+    applies any file-specific rule additions/deletions.
     """
-
     # Operate on a copy so we don't mutate the base config
     file_rules = copy.deepcopy(base.rules)
 
@@ -145,11 +143,12 @@ def extract_file_rules(text):
 
     Valid lines are SQL line comments that enable or disable specific rules.
 
-    >>> rules = extract_file_rules('...\\n-- enable:rule1 opt=foo arr=a,b,c')
-    >>> rules == {'disable': [], 'enable': {'rule1': {'opt': 'foo', 'arr': ['a','b','c']}}}
-    True
+    >>> rules = extract_file_rules('-- enable:rule1 arr=a,b,c')
+    >>> rules['disable']
+    []
+    >>> rules['enable']
+    {'rule1': {'arr': ['a', 'b', 'c']}}
     """
-
     rules = {
         'enable': {},
         'disable': [],
@@ -187,7 +186,6 @@ def _parse_options(opts):
     >>> _parse_options('k="1,2","3,4"')
     {'k': ['1,2', '3,4']}
     """
-
     options = {}
 
     # Either a simple quoted string or a bare value

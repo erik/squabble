@@ -45,7 +45,6 @@ def report(reporter_name, issues):
     """
     Call the named reporter function for every issue in the list of issues.
     """
-
     if reporter_name not in _REPORTERS:
         raise UnknownReporterException(reporter_name)
 
@@ -67,7 +66,6 @@ def location_for_issue(issue):
     Correctly return the offset into the file for this issue, or None if it
     cannot be determined.
     """
-
     if issue.node and issue.node.location != pglast.Missing:
         return issue.node.location.value
 
@@ -80,7 +78,6 @@ def issue_to_file_location(issue, contents):
     `location` field) and the contents of the file containing that node, return
     the (line_str, line, column) that node is located at, or `('', 1, 0)`.
     """
-
     loc = location_for_issue(issue)
 
     if loc is None:
@@ -160,7 +157,6 @@ def color_reporter(issue, file_contents):
 @reporter('json')
 def json_reporter(issue, file_contents):
     """Dump each issue as a JSON dictionary"""
-
     # Use the rule's name for serialization
     if issue.rule:
         issue = issue._replace(rule=issue.rule.meta()['name'])

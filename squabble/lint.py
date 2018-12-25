@@ -124,13 +124,13 @@ class LintContext:
     def report_issue(self, issue):
         self._session.report_issue(issue)
 
-    def report(self, rule, message_id, params=None, node=None, severity='ERROR'):
+    def report(self, rule, message_id, params=None, node=None, severity=None):
         self._session.report_issue(LintIssue(
             rule=rule,
             message_id=message_id,
             message_params=params,
             node=node,
-            severity=severity,
+            severity=severity or 'ERROR',
             # This is filled in later
             file=None,
         ))

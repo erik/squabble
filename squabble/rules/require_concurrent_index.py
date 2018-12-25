@@ -24,7 +24,6 @@ class RequireConcurrentIndex(Rule):
 
     Tags: performance
     """
-
     MESSAGES = {
         'index_not_concurrent': 'index "{name}" not created with `CONCURRENTLY`'
     }

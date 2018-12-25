@@ -7,6 +7,8 @@ from squabble.rules import Rule
 
 def split_required_col(req):
     """
+    Split columns as given as strings in the configuration.
+
     >>> split_required_col('col_a')
     ('col_a', None)
     >>> split_required_col('col_B,integer')
@@ -14,7 +16,6 @@ def split_required_col(req):
     >>> split_required_col('col_c,some(parametric,type)')
     ('col_c', 'some(parametric,type)')
     """
-
     split = req.lower().split(',', 1)
 
     # no type, just a value
@@ -26,15 +27,17 @@ def split_required_col(req):
 
 def _normalize_columns(table_elts):
     """
+    Return a list of (column name, column type) after pretty printing
+    them using pglast.
+
     >>> import pglast.printer
-    >>> create_table = pglast.parse_sql('CREATE TABLE _(col1 foo.bar(baz,123), col2 integer);')
+    >>> create_table = pglast.parse_sql(
+    ...   'CREATE TABLE _(col1 foo.bar(baz,123), col2 integer);')
     >>> table_elts = pglast.Node(create_table)[0].stmt.tableElts
     >>> _normalize_columns(table_elts)
     [('col1', 'foo.bar(baz, 123)'), ('col2', 'integer')]
     """
-
     # This is a pretty hacky implementation
-
     printer = pglast.printer.RawStream()
     columns = printer(table_elts).split(';')
 
@@ -49,15 +52,15 @@ def _normalize_columns(table_elts):
 
 def parse_column_type(typ):
     """
-    Feed the column type through pglast to normalize naming.
-    e.g. `timestamp with time zone => timestamptz`
+    Feed the column type through pglast to normalize naming
+
+    e.g. `timestamp with time zone => timestamptz`.
 
     >>> parse_column_type('integer')
     'integer'
     >>> parse_column_type('custom(type)')
     'custom(type)'
     """
-
     sql = 'CREATE TABLE _(_ {0});'.format(typ)
 
     try:
@@ -110,10 +113,10 @@ class RequireColumns(Rule):
 
     Tags: correctness
     """
-
     MESSAGES = {
         'missing_required_column': '"{tbl}" missing required column "{col}"',
-        'column_wrong_type': '"{tbl}.{col}" has type "{actual}" expected "{required}"'
+        'column_wrong_type': ('"{tbl}.{col}" has type "{actual}" expected '
+                              '"{required}"')
     }
 
     def enable(self, ctx):

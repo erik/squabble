@@ -7,7 +7,7 @@ import os.path
 from squabble import logger, UnknownRuleException
 
 
-def _load_plugin(directory):
+def _load_plugin(path):
     """
     Given an arbitrary directory, try to load all Python files in order
     to register the custom rule definitions.
@@ -16,14 +16,13 @@ def _load_plugin(directory):
     assumed that simply importing the module will be enough to have the
     side effect of registering the modules correctly.
     """
+    logger.debug('trying to load "%s" as a plugin directory', path)
 
-    logger.debug('trying to load "%s" as a plugin directory', directory)
+    if not os.path.isdir(path):
+        raise NotADirectoryError('cannot load "%s": not a directory' % path)
 
-    if not os.path.isdir(directory):
-        raise NotADirectoryError('cannot load "%s": not a directory' % directory)
-
-    files = os.path.join(directory, '*.py')
-    pkg_name = os.path.basename(os.path.dirname(directory))
+    files = os.path.join(path, '*.py')
+    pkg_name = os.path.basename(os.path.dirname(path))
 
     for file_name in glob.glob(files):
         logger.debug('loading file "%s" to pkg "%s"', file_name, pkg_name)
@@ -52,7 +51,6 @@ def load(plugin_paths=[]):
     Load built in rules as well as any custom rules contained in the
     directories in `plugin_paths`.
     """
-
     _load_builtin_rules()
 
     # Import plugins last so their naming takes precedence
@@ -121,7 +119,6 @@ class Rule:
         ...     def check_bar(self, context, node, x):
         ...         pass
         """
-
         def wrapper(self, *args, **kwargs):
             @functools.wraps(fn)
             def inner(context, node):

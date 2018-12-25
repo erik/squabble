@@ -43,14 +43,16 @@ class AddColumnDisallowConstraints(Rule):
     def enable(self, ctx):
         disallowed = self._options.get('disallowed', [])
         if disallowed == []:
-            raise RuleConfigurationException(self, 'must specify `disallowed` constraints')
+            raise RuleConfigurationException(
+                    self, 'must specify `disallowed` constraints')
 
         constraints = set()
 
         for c in disallowed:
             ty = self.CONSTRAINT_MAP[c.upper()]
             if ty is None:
-                raise RuleConfigurationException(self, 'unknown constraint: `%s`' % c)
+                raise RuleConfigurationException(
+                        self, 'unknown constraint: `%s`' % c)
 
             constraints.add(ty)
 
