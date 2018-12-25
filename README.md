@@ -160,7 +160,6 @@ class AllTablesMustBeLoud(Rule):
                 'table_name_not_loud_enough',
                 params={'name': table_name},
                 node=node.relation)
-
 ```
 
 ## Acknowledgments

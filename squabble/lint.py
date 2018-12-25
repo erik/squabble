@@ -113,18 +113,30 @@ class LintContext:
             exit_fn(self)
 
     def register_exit(self, fn):
+        """
+        Register `fn` to be called when the current node is finished being
+        traversed.
+        """
         self._exit_hooks.append(fn)
 
-    def register(self, node, fn):
-        if node not in self._hooks:
-            self._hooks[node] = []
+    def register(self, node_tag, fn):
+        """
+        Register `fn` to be called whenever `node_tag` node is visited.
 
-        self._hooks[node].append(fn)
+        >>> session = ...
+        >>> ctx = LintContext(session)
+        >>> ctx.register('CreateStmt', lambda ctx, node: ...)
+        """
+        if node_tag not in self._hooks:
+            self._hooks[node_tag] = []
+
+        self._hooks[node_tag].append(fn)
 
     def report_issue(self, issue):
         self._session.report_issue(issue)
 
     def report(self, rule, message_id, params=None, node=None, severity=None):
+        """Convenience wrapper to create and report a lint issue."""
         self._session.report_issue(LintIssue(
             rule=rule,
             message_id=message_id,

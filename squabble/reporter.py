@@ -111,6 +111,7 @@ def _format_message(issue):
 
 
 def _issue_info(issue, file_contents):
+    """Return a dictionary of metadata for an issue."""
     line, line_num, column = issue_to_file_location(issue, file_contents)
     formatted = _format_message(issue)
 

@@ -25,7 +25,7 @@ class RequireConcurrentIndex(Rule):
     Tags: performance
     """
     MESSAGES = {
-        'index_not_concurrent': 'index "{name}" not created with `CONCURRENTLY`'
+        'index_not_concurrent': 'index "{name}" not created `CONCURRENTLY`'
     }
 
     def enable(self, ctx):

@@ -80,6 +80,10 @@ def lint_file(base_config, file_name):
 
 
 def collect_files(paths):
+    """
+    Given a list of files or directories, return all named files as well as
+    any files ending in `.sql` in the directories.
+    """
     files = []
 
     for path in map(os.path.expanduser, paths):
