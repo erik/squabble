@@ -24,11 +24,16 @@ def reporter(name):
     `"reporter"` config value to `name`.
 
     The wrapped function will be called with each `LintIssue` and the
-    contents of the file being linted.
+    contents of the file being linted. Each reporter should return a
+    list of lines of output which will be printed to stderr.
 
-    >>> @reporter('json')
-    ... def reporter(issue, file_contents):
-    ...     print(json.dumps(issue._asdict()))
+    >>> from squabble.lint import LintIssue
+    >>> @reporter('no_info')
+    ... def no_info(issue, file_contents):
+    ...     return ['something happened']
+    ...
+    >>> no_info(LintIssue(), file_contents='')
+    ['something happened']
     """
     def wrapper(fn):
         _REPORTERS[name] = fn
@@ -48,7 +53,7 @@ def report(reporter_name, issues):
     if reporter_name not in _REPORTERS:
         raise UnknownReporterException(reporter_name)
 
-    fn = _REPORTERS[reporter_name]
+    reporter = _REPORTERS[reporter_name]
     files = {}
 
     for i in issues:
@@ -58,7 +63,8 @@ def report(reporter_name, issues):
                 files[i.file] = fp.read()
 
         file_contents = files.get(i.file, '')
-        fn(i, file_contents)
+        for line in reporter(i, file_contents):
+            _print_err(line)
 
 
 def location_for_issue(issue):
@@ -139,7 +145,9 @@ _COLOR_FORMAT = '{bold}{{file}}:{reset}{{line}}:{{column}}{reset} '\
 def plain_text_reporter(issue, file_contents):
     """Simple single-line output format that is easily parsed by editors."""
     info = _issue_info(issue, file_contents)
-    _print_err(_SIMPLE_FORMAT.format(**info))
+    return [
+        _SIMPLE_FORMAT.format(**info)
+    ]
 
 
 @reporter('color')
@@ -147,12 +155,14 @@ def color_reporter(issue, file_contents):
     """Extension of `plain`, uses ANSI color and shows error location."""
     info = _issue_info(issue, file_contents)
 
-    _print_err(_COLOR_FORMAT.format(**info))
+    output = [_COLOR_FORMAT.format(**info)]
 
     if info['line_text'] != '':
         arrow = ' ' * info['column'] + '^'
-        _print_err(info['line_text'])
-        _print_err(Style.BRIGHT + arrow + Style.RESET_ALL)
+        output.append(info['line_text'])
+        output.append(Style.BRIGHT + arrow + Style.RESET_ALL)
+
+    return output
 
 
 @reporter('json')
@@ -171,4 +181,6 @@ def json_reporter(issue, file_contents):
         if v is not None
     }
 
-    _print_err(json.dumps(obj))
+    return [
+        json.dumps(obj)
+    ]

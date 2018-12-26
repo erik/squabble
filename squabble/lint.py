@@ -43,6 +43,10 @@ def configure_rules(rule_config):
 
 
 def check_file(config, file_name):
+    """
+    Return a list of lint issues from using the given config to lint
+    `file_name`.
+    """
     try:
         rules = configure_rules(config.rules)
     except RuleConfigurationException as exc:
@@ -60,6 +64,11 @@ def check_file(config, file_name):
 
 
 class Session:
+    """
+    A run of the linter using a given set of rules over a single file. This
+    class exists mainly to hold the list of issues returned by the enabled
+    rules.
+    """
     def __init__(self, rules, file_name):
         self._rules = rules
         self._file = file_name
@@ -90,6 +99,10 @@ class Session:
 
 
 class LintContext:
+    """
+    Contains the node tag callback hooks enabled at or below the `parent_node`
+    passed to the call to `traverse`.
+    """
     def __init__(self, session):
         self._hooks = {}
         self._exit_hooks = []

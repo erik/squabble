@@ -69,8 +69,7 @@ def discover_config_location():
 
 def get_vcs_root():
     return subprocess.getoutput(
-        'git rev-parse --show-toplevel 2>/dev/null ||'
-        'echo ""')
+        'git rev-parse --show-toplevel 2>/dev/null || echo ""')
 
 
 def get_base_config(preset_name=None):

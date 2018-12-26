@@ -1,4 +1,4 @@
-'''
+"""
 Usage:
   squabble [options] [PATHS...]
   squabble (-h | --help)
@@ -17,7 +17,7 @@ Options:
   -R --list-rules      Print out information about all available rules
   -V --verbose         Turn on debug level logging
   -v --version         Show version information
-'''
+"""
 
 import glob
 import json
