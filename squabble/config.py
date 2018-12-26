@@ -31,7 +31,6 @@ PRESETS = {
                 'AddColumnDisallowConstraints': {
                     'disallowed': ['DEFAULT', 'NOT NULL', 'UNIQUE']
                 },
-                'RequirePrimaryKey': {},
                 'RequireConcurrentIndex': {},
                 'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
