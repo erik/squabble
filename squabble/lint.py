@@ -96,18 +96,28 @@ class LintContext:
         self._session = session
 
     def traverse(self, parent_node):
+        """
+        Recursively walk down the AST starting at `parent_node`.
+
+        For every node, call any callback functions registered for that
+        particular node tag.
+        """
         for node in parent_node.traverse():
             # Ignore scalar values
             if not isinstance(node, pglast.node.Node):
                 continue
 
             tag = node.node_tag
-            for hook in self._hooks.get(tag, []):
-                child_ctx = LintContext(self._session)
+
+            if tag not in self._hooks:
+                continue
+
+            child_ctx = LintContext(self._session)
+            for hook in self._hooks[tag]:
                 hook(child_ctx, node)
 
-                # children can set up their own hooks, so recurse
-                child_ctx.traverse(node)
+            # children can set up their own hooks, so recurse
+            child_ctx.traverse(node)
 
         for exit_fn in self._exit_hooks:
             exit_fn(self)
