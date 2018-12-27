@@ -10,9 +10,9 @@ class RequirePrimaryKey(Rule):
 
     Configuration:
 
-        "rules": {
-            "RequirePrimaryKey": {}
-        }
+    .. code-block:: json
+
+        { "RequirePrimaryKey": {} }
 
     Tags: performance, correctness
     """

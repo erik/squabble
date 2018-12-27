@@ -16,7 +16,9 @@ class RequireConcurrentIndex(Rule):
 
     Configuration:
 
-        "rules": {
+    .. code-block:: json
+
+        {
             "RequireConcurrentIndex": {
                 "include_new_tables": false
             }

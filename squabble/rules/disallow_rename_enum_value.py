@@ -9,9 +9,9 @@ class DisallowRenameEnumValue(Rule):
 
     Configuration:
 
-        "rules": {
-            "DisallowChangeEnumValue": {}
-        }
+    .. code-block:: json
+
+        { "DisallowChangeEnumValue": {} }
 
     Tags: backwards-compatibility
     """

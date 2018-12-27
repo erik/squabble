@@ -9,9 +9,9 @@ class DisallowChangeColumnType(Rule):
 
     Configuration:
 
-        "rules": {
-            "DisallowChangeColumnType": {}
-        }
+    .. code-block:: json
+
+       { "DisallowChangeColumnType": {} }
 
     Tags: backwards-compatibility
     """

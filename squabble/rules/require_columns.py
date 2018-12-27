@@ -100,7 +100,9 @@ class RequireColumns(Rule):
 
     Configuration:
 
-        "rules": {
+    .. code-block:: json
+
+        {
             "RequireColumns": {
                 "required": ["column_foo,column_type", "column_bar"]
             }

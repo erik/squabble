@@ -68,12 +68,21 @@ def discover_config_location():
 
 
 def get_vcs_root():
+    """
+    Return the path to the root of the Git repository for the current directory,
+    or empty string if not in a repository.
+    """
     return subprocess.getoutput(
         'git rev-parse --show-toplevel 2>/dev/null || echo ""')
 
 
 def get_base_config(preset_name=None):
-    """Return a basic config value that can be overridden by users."""
+    """
+    Return a basic config value that can be overridden by user configuration
+    files.
+
+    :param preset_name: The named preset to use, or None
+    """
     if not preset_name:
         return Config(**DEFAULT_CONFIG)
 

@@ -12,11 +12,13 @@ class AddColumnDisallowConstraints(Rule):
 
     Configuration:
 
-        "rules": {
-            "AddColumnDisallowConstraints": {
-                "disallowed": ["DEFAULT", "FOREIGN"]
-            }
-        }
+    .. code-block:: json
+
+       {
+           "AddColumnDisallowConstraints": {
+               "disallowed": ["DEFAULT", "FOREIGN"]
+           }
+       }
 
     Valid constraint types:
       - DEFAULT
