@@ -1,9 +1,10 @@
 import pglast
 
-from squabble.rules import Rule
+import squabble.rule
+from squabble.rules import BaseRule
 
 
-class DisallowRenameEnumValue(Rule):
+class DisallowRenameEnumValue(BaseRule):
     """
     Prevent renaming existing enum value.
 
@@ -23,7 +24,7 @@ class DisallowRenameEnumValue(Rule):
     def enable(self, ctx):
         ctx.register('AlterEnumStmt', self._check_enum())
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _check_enum(self, ctx, node):
         """
         Node is an 'AlterEnumStmt' value

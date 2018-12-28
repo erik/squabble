@@ -1,11 +1,11 @@
 import pglast
 
+import squabble.rule
 from squabble import logger
+from squabble.rules import BaseRule
 
-from squabble.rules import Rule
 
-
-class RequireConcurrentIndex(Rule):
+class RequireConcurrentIndex(BaseRule):
     """
     Require all new indexes to be created with `CONCURRENTLY` so they won't
     block.
@@ -41,14 +41,14 @@ class RequireConcurrentIndex(Rule):
 
         ctx.register('IndexStmt', self._create_index(tables))
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _create_table(self, ctx, node, tables):
         table = node.relation.relname.value.lower()
         logger.debug('found a new table: %s', table)
 
         tables.add(table)
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _create_index(self, ctx, node, tables):
         index_name = 'unnamed'
         if node.idxname != pglast.Missing:

@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from squabble import rules, config, lint, reporter
+from squabble import rule, config, lint, reporter
 
 
 SQL_FILES = glob.glob('tests/sql/*.sql')
@@ -13,7 +13,7 @@ OUTPUT_MARKER = '-- >>> '
 
 
 def setup_module(_mod):
-    rules.load(plugin_paths=[])
+    rule.load_rules(plugin_paths=[])
 
 
 def expected_output(file_name):

@@ -6,8 +6,8 @@ squabble.rules package
     :undoc-members:
     :show-inheritance:
 
-Submodules
-----------
+Built in rules
+--------------
 
 .. toctree::
 
@@ -17,4 +17,3 @@ Submodules
    squabble.rules.require_columns
    squabble.rules.require_concurrent_index
    squabble.rules.require_primary_key
-

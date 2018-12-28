@@ -4,10 +4,8 @@
    :maxdepth: 2
    :titlesonly:
 
-.. toctree::
-   :maxdepth: 3
-
    api/index
+
 
 Indices and tables
 ==================

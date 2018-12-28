@@ -30,7 +30,7 @@ import docopt
 from colorama import Style
 
 import squabble
-from squabble import config, lint, logger, rules, reporter
+from squabble import config, lint, logger, rule, reporter
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
     base_config = config.load_config(config_file, preset)
 
     # Load all of the rule classes into memory
-    rules.load(plugin_paths=base_config.plugins)
+    rule.load_rules(plugin_paths=base_config.plugins)
 
     if args['--list-rules']:
         return list_rules()
@@ -108,7 +108,7 @@ def show_rule(name):
     }
 
     try:
-        rule = rules.Registry.get_meta(name)
+        rule = rule.Registry.get_meta(name)
     except squabble.UnknownRuleException:
         print('{bold}Unknown rule:{reset} {name}'.format(**{
             'name': name,
@@ -129,7 +129,7 @@ def list_rules():
         'reset': Style.RESET_ALL,
     }
 
-    all_rules = sorted(rules.Registry.all(), key=lambda r: r['meta']['name'])
+    all_rules = sorted(rule.Registry.all(), key=lambda r: r['meta']['name'])
 
     for rule in all_rules:
         meta = rule['meta']

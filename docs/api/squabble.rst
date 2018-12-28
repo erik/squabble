@@ -6,19 +6,9 @@ squabble package
     :undoc-members:
     :show-inheritance:
 
-Subpackages
------------
-
 .. toctree::
 
-    squabble.rules
-
-Submodules
-----------
-
-.. toctree::
-
+   squabble.rules
    squabble.config
    squabble.lint
    squabble.reporter
-

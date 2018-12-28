@@ -1,12 +1,12 @@
 import pglast
 from pglast.enums import AlterTableType, ConstrType
 
+import squabble.rule
 from squabble import RuleConfigurationException
+from squabble.rules import BaseRule
 
-from squabble.rules import Rule
 
-
-class AddColumnDisallowConstraints(Rule):
+class AddColumnDisallowConstraints(BaseRule):
     """
     Prevent adding a column with certain constraints to an existing table
 
@@ -60,7 +60,7 @@ class AddColumnDisallowConstraints(Rule):
 
         ctx.register('AlterTableCmd', self._check(constraints))
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _check(self, ctx, node, disallowed_constraints):
         """
         Node is an `AlterTableCmd`:

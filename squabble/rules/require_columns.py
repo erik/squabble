@@ -1,8 +1,9 @@
 import pglast
 import pglast.printers
 
+import squabble.rule
 from squabble import RuleConfigurationException
-from squabble.rules import Rule
+from squabble.rules import BaseRule
 
 
 def split_required_col(req):
@@ -94,7 +95,7 @@ def get_required_columns(config):
     return required
 
 
-class RequireColumns(Rule):
+class RequireColumns(BaseRule):
     """
     Require that newly created tables have specified columns.
 
@@ -126,7 +127,7 @@ class RequireColumns(Rule):
         cols = get_required_columns(config)
         ctx.register('CreateStmt', self._check_create_table(cols))
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _check_create_table(self, ctx, node, required):
         table = node.relation
         columns = {}

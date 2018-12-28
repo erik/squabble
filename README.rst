@@ -125,15 +125,16 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
 
 .. code:: python
 
-   from squabble.rules import Rule
+   import squabble.rule
+   from squabble.rules import BaseRule
 
-   class AllTablesMustBeLoud(Rule):
+   class AllTablesMustBeLoud(BaseRule):
        """
        A custom rule which makes sure that all table names are expressed
        in CAPSLOCK NOTATION.
        """
 
-       # Define the different message types that this Rule can return
+       # Define the different message types that this rule can return
        MESSAGES = {
            'table_not_loud_enough': 'table "{name}" not LOUD ENOUGH'
        }
@@ -157,7 +158,7 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
 
        # node_visitor will pass in `ctx, node` for you so there's no need to
        # use a lambda
-       @Rule.node_visitor
+       @squabble.rule.node_visitor
        def _check(self, ctx, node):
            """
            Called when we enter a 'CreateStmt' node. Here we can register more

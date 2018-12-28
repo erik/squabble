@@ -1,9 +1,9 @@
 from pglast.enums import AlterTableType
 
-from squabble.rules import Rule
+from squabble.rules import BaseRule
 
 
-class DisallowChangeColumnType(Rule):
+class DisallowChangeColumnType(BaseRule):
     """
     Prevent changing the type of an existing column.
 

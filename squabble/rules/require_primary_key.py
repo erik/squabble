@@ -1,10 +1,11 @@
 import pglast
 from pglast.enums import ConstrType
 
-from squabble.rules import Rule
+import squabble.rule
+from squabble.rules import BaseRule
 
 
-class RequirePrimaryKey(Rule):
+class RequirePrimaryKey(BaseRule):
     """
     Require that all new tables specify a PRIMARY KEY constraint.
 
@@ -24,7 +25,7 @@ class RequirePrimaryKey(Rule):
     def enable(self, ctx):
         ctx.register('CreateStmt', self._create_table())
 
-    @Rule.node_visitor
+    @squabble.rule.node_visitor
     def _create_table(self, ctx, node):
         seen_pk = False
 
