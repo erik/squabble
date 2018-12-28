@@ -38,7 +38,6 @@ def _load_builtin_rules():
     modules = glob.glob(os.path.dirname(__file__) + '/rules/*.py')
 
     for mod in modules:
-        print(mod)
         mod_name = os.path.basename(mod)[:-3]
 
         if not os.path.isfile(mod) or mod_name.startswith('__'):
@@ -114,23 +113,36 @@ class Registry:
         """
         Return metadata about a given rule in the registry.
 
+        If no rule exists in the registry named ``name``,
+        :class:`UnknownRuleException` will be thrown.
+
         The returned dictionary will look something like this:
 
         .. code-block:: python
 
             {
-                'class': RuleClass,
-                'meta': {
-                    'name': 'RuleClass',
-                    'help': 'Some rule...',
-                    # ...
-                }
+                'name': 'RuleClass',
+                'help': 'Some rule...',
+                # ...
             }
         """
         if name not in Registry._REGISTRY:
             raise UnknownRuleException(name)
 
-        return Registry._REGISTRY[name]
+        return Registry._REGISTRY[name]['meta']
+
+    @staticmethod
+    def get_class(name):
+        """
+        Return class for given rule name in the registry.
+
+        If no rule exists in the registry named ``name``,
+        :class:`UnknownRuleException` will be thrown.
+        """
+        if name not in Registry._REGISTRY:
+            raise UnknownRuleException(name)
+
+        return Registry._REGISTRY[name]['class']
 
     @staticmethod
     def all():
@@ -138,4 +150,5 @@ class Registry:
         Return an iterator over all known rule metadata. Equivalent to calling
         :func:`~Registry.get_meta()` for all registered rules.
         """
-        return Registry._REGISTRY.values()
+        for r in Registry._REGISTRY.values():
+            yield r['meta']

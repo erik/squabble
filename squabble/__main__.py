@@ -108,7 +108,7 @@ def show_rule(name):
     }
 
     try:
-        rule = rule.Registry.get_meta(name)
+        meta = rule.Registry.get_meta(name)
     except squabble.UnknownRuleException:
         print('{bold}Unknown rule:{reset} {name}'.format(**{
             'name': name,
@@ -116,7 +116,6 @@ def show_rule(name):
         }))
         sys.exit(1)
 
-    meta = rule['meta']
     print('{bold}{name}{reset} - {description}\n{help}'.format(**{
         **meta,
         **color
@@ -129,11 +128,9 @@ def list_rules():
         'reset': Style.RESET_ALL,
     }
 
-    all_rules = sorted(rule.Registry.all(), key=lambda r: r['meta']['name'])
+    all_rules = sorted(rule.Registry.all(), key=lambda r: r['name'])
 
-    for rule in all_rules:
-        meta = rule['meta']
-
+    for meta in all_rules:
         print('{bold}{name: <32}{reset} {description}'.format(**{
             **color,
             **meta

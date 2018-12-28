@@ -34,9 +34,7 @@ def configure_rules(rule_config):
     rules = []
 
     for name, options in rule_config.items():
-        meta = Registry.get_meta(name)
-        cls = meta['class']
-
+        cls = Registry.get_class(name)
         rules.append(cls(options))
 
     return rules
