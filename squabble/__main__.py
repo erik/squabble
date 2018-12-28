@@ -41,15 +41,14 @@ def main():
         logger.setLevel('DEBUG')
 
     paths = args['PATHS']
-    config_file = args['--config'] or config.discover_config_location()
     preset = args['--preset']
 
     if args['--list-presets']:
         return list_presets()
 
+    config_file = args['--config'] or config.discover_config_location()
     if config_file and not os.path.exists(config_file):
-        print('Could not find a valid config file!')
-        sys.exit(1)
+        sys.exit('%s: no such file or directory' % config_file)
 
     base_config = config.load_config(config_file, preset)
 
@@ -88,8 +87,7 @@ def collect_files(paths):
 
     for path in map(os.path.expanduser, paths):
         if not os.path.exists(path):
-            logger.error('%s: no such file or directory', path)
-            sys.exit(1)
+            sys.exit('%s: no such file or directory' % path)
 
         elif os.path.isdir(path):
             sql = os.path.join(path, '**/*.sql')
@@ -102,6 +100,7 @@ def collect_files(paths):
 
 
 def show_rule(name):
+    """Print information about rule named ``name``."""
     color = {
         'bold': Style.BRIGHT,
         'reset': Style.RESET_ALL,
@@ -110,11 +109,10 @@ def show_rule(name):
     try:
         meta = rule.Registry.get_meta(name)
     except squabble.UnknownRuleException:
-        print('{bold}Unknown rule:{reset} {name}'.format(**{
+        sys.exit('{bold}Unknown rule:{reset} {name}'.format(**{
             'name': name,
             **color
         }))
-        sys.exit(1)
 
     print('{bold}{name}{reset} - {description}\n{help}'.format(**{
         **meta,
@@ -123,6 +121,7 @@ def show_rule(name):
 
 
 def list_rules():
+    """Print out all registered rules and brief description of what they do."""
     color = {
         'bold': Style.BRIGHT,
         'reset': Style.RESET_ALL,
@@ -138,6 +137,7 @@ def list_rules():
 
 
 def list_presets():
+    """Print out all the preset configurations."""
     for name, preset in config.PRESETS.items():
         print('{bold}{name}{reset} - {description}'.format(
             name=name,
