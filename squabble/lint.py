@@ -4,11 +4,10 @@ import collections
 
 import pglast
 
-from squabble import RuleConfigurationException
 from squabble.rules import Registry
 
 
-LintIssue = collections.namedtuple('LintIssue', [
+_LintIssue = collections.namedtuple('LintIssue', [
     'message_id',
     'message_text',
     'message_params',
@@ -20,7 +19,11 @@ LintIssue = collections.namedtuple('LintIssue', [
 ])
 
 # Make all the fields nullable
-LintIssue.__new__.__defaults__ = (None,) * len(LintIssue._fields)
+_LintIssue.__new__.__defaults__ = (None,) * len(_LintIssue._fields)
+
+
+class LintIssue(_LintIssue):
+    pass
 
 
 def parse_file(file_name):

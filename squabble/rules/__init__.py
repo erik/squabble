@@ -8,10 +8,22 @@ class BaseRule:
     Rules work by adding hooks into the abstract syntax tree for a SQL
     file, and then performing their lint actions inside the callback
     functions.
-    """
 
-    def __init__(self, options):
-        self._options = options
+    Rules represent lint issues using pre-defined IDs, which are
+    stored in a class variable called ``MESSAGES``. Any format string
+    parameters will be filled in later by :func:``BaseRule.format``.
+
+    For example:
+
+    >>> class MyRule(BaseRule):
+    ...     MESSAGES = {
+    ...         'bad_column_name': 'column {name} is not allowed',
+    ...         'bad_column_type': 'column {name} has bad type {type}'
+    ...     }
+    ...
+    >>> MyRule.format('bad_column_name', {'name': 'foo'})
+    'column foo is not allowed'
+    """
 
     def __init_subclass__(cls, **kwargs):
         """Keep track of all classes that inherit from ``BaseRule``."""

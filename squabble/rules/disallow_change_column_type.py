@@ -21,8 +21,26 @@ class DisallowChangeColumnType(BaseRule):
                                     '"{col}"')
     }
 
-    def __init__(self, opts):
-        self._opts = opts
+    def explain_change_type_not_allowed():
+        """
+        Trying to change the type of an existing column may hold a
+        full table lock while all of the rows are modified.
+
+        Additionally, changing the type of a column may not be
+        backwards compatible with code that has already been deployed.
+
+        Instead, try adding a new column with the updated type, and
+        then migrate over.
+
+        For example, to migrate a column from ``type_a`` to ``type_b``.
+
+        .. code-block:: sql
+
+           ALTER TABLE foo ADD COLUMN bar_new type_b;
+           UPDATE foo SET bar_new = cast(bar_old, type_b);
+           -- Deploy server code to point to new column
+           ALTER TABLE foo DROP COLUMN bar_old;
+        """
 
     def enable(self, ctx, _config):
         ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))

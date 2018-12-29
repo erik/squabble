@@ -110,10 +110,8 @@ def _format_message(issue):
     if issue.message_text:
         return issue.message_text
 
-    template = issue.rule.MESSAGES[issue.message_id]
     params = issue.message_params or {}
-
-    return template.format(**params)
+    return issue.rule.format(issue.message_id, params)
 
 
 def _issue_info(issue, file_contents):
