@@ -69,7 +69,7 @@ def node_visitor(fn):
 
     >>> from squabble.rules import BaseRule
     >>> class SomeRule(BaseRule):
-    ...     def enable(self, ctx):
+    ...     def enable(self, ctx, config):
     ...         # These are equivalent
     ...         ctx.register('foo', self.check_foo(x=1))
     ...         ctx.register('bar', lambda c, n: self.check_bar(c, n, x=1))

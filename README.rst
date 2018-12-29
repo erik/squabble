@@ -139,13 +139,13 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
            'table_not_loud_enough': 'table "{name}" not LOUD ENOUGH'
        }
 
-       def enable(self, root_ctx):
+       def enable(self, root_ctx, config):
            """
            Called before the root AST node is traversed. Here's where most
            callbacks should be registered for different AST nodes.
 
            Each linter is initialized once per file that it is being run
-           against. `self._options` will contain the merged base configuration
+           against. `config` will contain the merged base configuration
            with the file-specific configuration options for this linter.
            """
 

@@ -42,8 +42,11 @@ class AddColumnDisallowConstraints(BaseRule):
         'constraint_not_allowed': 'column "{col}" has a disallowed constraint'
     }
 
-    def enable(self, ctx):
-        disallowed = self._options.get('disallowed', [])
+    def explain_constraint_not_allowed():
+        pass
+
+    def enable(self, ctx, config):
+        disallowed = config.get('disallowed', [])
         if disallowed == []:
             raise RuleConfigurationException(
                     self, 'must specify `disallowed` constraints')

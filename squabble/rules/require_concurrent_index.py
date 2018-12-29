@@ -30,8 +30,8 @@ class RequireConcurrentIndex(BaseRule):
         'index_not_concurrent': 'index "{name}" not created `CONCURRENTLY`'
     }
 
-    def enable(self, ctx):
-        include_new = self._options.get('include_new_tables', False)
+    def enable(self, ctx, config):
+        include_new = config.get('include_new_tables', False)
         tables = set()
 
         # Keep track of CREATE TABLE statements if we're not including

@@ -22,7 +22,7 @@ class RequirePrimaryKey(BaseRule):
         'missing_primary_key': 'table "{tbl}" does not name a primary key'
     }
 
-    def enable(self, ctx):
+    def enable(self, ctx, _config):
         ctx.register('CreateStmt', self._create_table())
 
     @squabble.rule.node_visitor

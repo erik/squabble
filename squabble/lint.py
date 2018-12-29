@@ -30,12 +30,12 @@ def parse_file(file_name):
     return pglast.Node(pglast.parse_sql(contents))
 
 
-def configure_rules(rule_config):
+def _configure_rules(rule_config):
     rules = []
 
-    for name, options in rule_config.items():
+    for name, config in rule_config.items():
         cls = Registry.get_class(name)
-        rules.append(cls(options))
+        rules.append((cls(), config))
 
     return rules
 
@@ -45,18 +45,7 @@ def check_file(config, file_name):
     Return a list of lint issues from using the given config to lint
     `file_name`.
     """
-    try:
-        rules = configure_rules(config.rules)
-    except RuleConfigurationException as exc:
-        return [LintIssue(
-            message_text=exc.msg,
-            rule=exc.rule,
-            node=None,
-            file=file_name,
-            severity='ERROR',
-            location=None,
-        )]
-
+    rules = _configure_rules(config.rules)
     s = Session(rules, file_name)
     return s.lint()
 
@@ -79,8 +68,8 @@ class Session:
     def lint(self):
         root_ctx = LintContext(self)
 
-        for rule in self._rules:
-            rule.enable(root_ctx)
+        for rule, config in self._rules:
+            rule.enable(root_ctx, config)
 
         try:
             ast = parse_file(self._file)
@@ -158,7 +147,7 @@ class LintContext:
 
     def report(self, rule, message_id, params=None, node=None, severity=None):
         """Convenience wrapper to create and report a lint issue."""
-        self._session.report_issue(LintIssue(
+        self.report_issue(LintIssue(
             rule=rule,
             message_id=message_id,
             message_params=params,

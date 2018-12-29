@@ -24,7 +24,7 @@ class DisallowChangeColumnType(BaseRule):
     def __init__(self, opts):
         self._opts = opts
 
-    def enable(self, ctx):
+    def enable(self, ctx, _config):
         ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))
 
     def _check(self, ctx, node):

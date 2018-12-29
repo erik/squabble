@@ -122,8 +122,8 @@ class RequireColumns(BaseRule):
                               '"{required}"')
     }
 
-    def enable(self, ctx):
-        config = self._options.get('required', [])
+    def enable(self, ctx, config):
+        config = config.get('required', [])
         cols = get_required_columns(config)
         ctx.register('CreateStmt', self._check_create_table(cols))
 

@@ -21,7 +21,7 @@ class DisallowRenameEnumValue(BaseRule):
         'rename_not_allowed': 'cannot rename existing enum value "{value}"'
     }
 
-    def enable(self, ctx):
+    def enable(self, ctx, _config):
         ctx.register('AlterEnumStmt', self._check_enum())
 
     @squabble.rule.node_visitor
