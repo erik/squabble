@@ -21,6 +21,12 @@ class DisallowRenameEnumValue(BaseRule):
         'rename_not_allowed': 'cannot rename existing enum value "{value}"'
     }
 
+    def explain_rename_not_allowed():
+        """
+        Renaming an existing enum value may be backwards compatible
+        with code that is live in production.
+        """
+
     def enable(self, ctx, _config):
         ctx.register('AlterEnumStmt', self._check_enum())
 

@@ -30,7 +30,7 @@ class AddColumnDisallowConstraints(BaseRule):
     Tags: performance, backwards-compatibility
     """
 
-    CONSTRAINT_MAP = {
+    _CONSTRAINT_MAP = {
         'DEFAULT': ConstrType.CONSTR_DEFAULT,
         'NULL': ConstrType.CONSTR_NULL,
         'NOT NULL': ConstrType.CONSTR_NOTNULL,
@@ -43,7 +43,22 @@ class AddColumnDisallowConstraints(BaseRule):
     }
 
     def explain_constraint_not_allowed():
-        pass
+        """
+        When adding a column to an existing table, certain constraints can have
+        unintentional side effects, like locking the table or introducing
+        performance issues.
+
+        For example, adding a ``DEFAULT`` constraint may hold a lock on the
+        table while all existing rows are modified to fill in the default
+        value.
+
+        A ``UNIQUE`` constraint will require scanning the table to confirm
+        there are no duplicates.
+
+        On a particularly hot table, a ``FOREIGN`` constraint will introduce
+        possibly dangerous overhead to confirm the referential integrity of
+        each row.
+        """
 
     def enable(self, ctx, config):
         disallowed = config.get('disallowed', [])
@@ -54,7 +69,7 @@ class AddColumnDisallowConstraints(BaseRule):
         constraints = set()
 
         for c in disallowed:
-            ty = self.CONSTRAINT_MAP[c.upper()]
+            ty = self._CONSTRAINT_MAP[c.upper()]
             if ty is None:
                 raise RuleConfigurationException(
                         self, 'unknown constraint: `%s`' % c)

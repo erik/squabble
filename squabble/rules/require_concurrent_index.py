@@ -26,9 +26,22 @@ class RequireConcurrentIndex(BaseRule):
 
     Tags: performance
     """
+
     MESSAGES = {
         'index_not_concurrent': 'index "{name}" not created `CONCURRENTLY`'
     }
+
+    def explain_index_not_concurrent():
+        """
+        Adding a new index to an existing table may hold a full table lock
+        while the index is being built. On large tables, this may take a long
+        time, so the preferred approach is to create the index concurrently
+        instead.
+
+        .. code-block:: sql
+
+           CREATE INDEX CONCURRENTLY users_by_name ON users(name);
+        """
 
     def enable(self, ctx, config):
         include_new = config.get('include_new_tables', False)

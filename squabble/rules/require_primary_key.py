@@ -22,6 +22,15 @@ class RequirePrimaryKey(BaseRule):
         'missing_primary_key': 'table "{tbl}" does not name a primary key'
     }
 
+    def explain_missing_primary_key():
+        """
+        When creating a new table, it's usually a good idea to define a primary
+        key, as it can guarantee a unique, fast lookup into the table.
+
+        If no single column will uniquely identify a row, creating a composite
+        primary key is also possible.
+        """
+
     def enable(self, ctx, _config):
         ctx.register('CreateStmt', self._create_table())
 
