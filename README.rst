@@ -126,6 +126,7 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
 .. code:: python
 
    import squabble.rule
+   from squabble.message import Message
    from squabble.rules import BaseRule
 
    class AllTablesMustBeLoud(BaseRule):
@@ -135,9 +136,9 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
        """
 
        # Define the different message types that this rule can return
-       MESSAGES = {
-           'table_not_loud_enough': 'table "{name}" not LOUD ENOUGH'
-       }
+       class TableNotLoudEnough(Message):
+           """Add more details about the message here"""
+           TEMPLATE = 'table "{name}" not LOUD ENOUGH'
 
        def enable(self, root_ctx, config):
            """
@@ -170,9 +171,7 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
            if table_name != table_name.upper():
                # Report an error if this table was not SCREAMING_CASE
                ctx.report(
-                   self,
-                   'table_name_not_loud_enough',
-                   params={'name': table_name},
+                   self.TableNotLoudEnough(name=table_name),
                    node=node.relation)
 
 Acknowledgments

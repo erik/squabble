@@ -8,12 +8,10 @@ from squabble.rules import Registry
 
 
 _LintIssue = collections.namedtuple('LintIssue', [
-    'message_id',
+    'message',
     'message_text',
-    'message_params',
     'node',
     'file',
-    'rule',
     'severity',
     'location'
 ])
@@ -148,12 +146,10 @@ class LintContext:
     def report_issue(self, issue):
         self._session.report_issue(issue)
 
-    def report(self, rule, message_id, params=None, node=None, severity=None):
+    def report(self, message, node=None, severity=None):
         """Convenience wrapper to create and report a lint issue."""
         self.report_issue(LintIssue(
-            rule=rule,
-            message_id=message_id,
-            message_params=params,
+            message=message,
             node=node,
             severity=severity or 'ERROR',
             # This is filled in later

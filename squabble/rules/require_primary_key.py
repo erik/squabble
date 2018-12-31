@@ -2,6 +2,7 @@ import pglast
 from pglast.enums import ConstrType
 
 import squabble.rule
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -18,11 +19,7 @@ class RequirePrimaryKey(BaseRule):
     Tags: performance, correctness
     """
 
-    MESSAGES = {
-        'missing_primary_key': 'table "{tbl}" does not name a primary key'
-    }
-
-    def explain_missing_primary_key():
+    class MissingPrimaryKey(Message):
         """
         When creating a new table, it's usually a good idea to define a primary
         key, as it can guarantee a unique, fast lookup into the table.
@@ -30,6 +27,8 @@ class RequirePrimaryKey(BaseRule):
         If no single column will uniquely identify a row, creating a composite
         primary key is also possible.
         """
+
+        TEMPLATE = 'table "{tbl}" does not name a primary key'
 
     def enable(self, ctx, _config):
         ctx.register('CreateStmt', self._create_table())
@@ -67,7 +66,5 @@ class RequirePrimaryKey(BaseRule):
         # Use the table's name as the reported error's location
         node = table_node.relation
 
-        ctx.report(self,
-                   'missing_primary_key',
-                   params={'tbl': node.relname.value},
+        ctx.report(self.MissingPrimaryKey(tbl=node.relname.value),
                    node=node)

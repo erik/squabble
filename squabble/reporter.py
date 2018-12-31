@@ -110,8 +110,7 @@ def _format_message(issue):
     if issue.message_text:
         return issue.message_text
 
-    params = issue.message_params or {}
-    return issue.rule.format(issue.message_id, params)
+    return issue.message.format()
 
 
 def _issue_info(issue, file_contents):
@@ -124,7 +123,8 @@ def _issue_info(issue, file_contents):
         'line': line_num,
         'column': column,
         'message_formatted': formatted,
-        **issue._asdict()
+        **issue._asdict(),
+        **(issue.message.asdict() if issue.message else {})
     }
 
 
@@ -166,13 +166,13 @@ def color_reporter(issue, file_contents):
 @reporter('json')
 def json_reporter(issue, file_contents):
     """Dump each issue as a JSON dictionary"""
-    # Use the rule's name for serialization
-    if issue.rule:
-        issue = issue._replace(rule=issue.rule.meta()['name'])
 
     # pglast nodes aren't JSON serializable
     if issue.node:
         issue = issue._replace(node=issue.node.parse_tree)
+
+    if issue.message:
+        issue = issue.replace(message=issue.message.asdict())
 
     obj = {
         k: v for k, v in issue._asdict().items()

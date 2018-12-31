@@ -2,6 +2,7 @@ import pglast
 
 import squabble.rule
 from squabble import logger
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -27,11 +28,7 @@ class RequireConcurrentIndex(BaseRule):
     Tags: performance
     """
 
-    MESSAGES = {
-        'index_not_concurrent': 'index "{name}" not created `CONCURRENTLY`'
-    }
-
-    def explain_index_not_concurrent():
+    class IndexNotConcurrent(Message):
         """
         Adding a new index to an existing table may hold a full table lock
         while the index is being built. On large tables, this may take a long
@@ -42,6 +39,8 @@ class RequireConcurrentIndex(BaseRule):
 
            CREATE INDEX CONCURRENTLY users_by_name ON users(name);
         """
+
+        TEMPLATE = 'index "{name}" not created `CONCURRENTLY`'
 
     def enable(self, ctx, config):
         include_new = config.get('include_new_tables', False)
@@ -80,7 +79,5 @@ class RequireConcurrentIndex(BaseRule):
             return
 
         ctx.report(
-            self,
-            'index_not_concurrent',
-            params={'name': index_name},
+            self.IndexNotConcurrent(name=index_name),
             node=node.relation)

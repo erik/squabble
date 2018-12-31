@@ -1,6 +1,7 @@
 import pglast
 
 import squabble.rule
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -17,15 +18,12 @@ class DisallowRenameEnumValue(BaseRule):
     Tags: backwards-compatibility
     """
 
-    MESSAGES = {
-        'rename_not_allowed': 'cannot rename existing enum value "{value}"'
-    }
-
-    def explain_rename_not_allowed():
+    class RenameNotAllowed(Message):
         """
         Renaming an existing enum value may be backwards compatible
         with code that is live in production.
         """
+        TEMPLATE = 'cannot rename existing enum value "{value}"'
 
     def enable(self, ctx, _config):
         ctx.register('AlterEnumStmt', self._check_enum())
@@ -49,4 +47,4 @@ class DisallowRenameEnumValue(BaseRule):
 
         renamed = node.oldVal.value
 
-        ctx.report(self, 'rename_not_allowed', params={'value': renamed})
+        ctx.report(self.RenameNotAllowed(value=renamed))

@@ -3,6 +3,7 @@ from pglast.enums import AlterTableType, ConstrType
 
 import squabble.rule
 from squabble import RuleConfigurationException
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -38,11 +39,7 @@ class AddColumnDisallowConstraints(BaseRule):
         'UNIQUE': ConstrType.CONSTR_UNIQUE,
     }
 
-    MESSAGES = {
-        'constraint_not_allowed': 'column "{col}" has a disallowed constraint'
-    }
-
-    def explain_constraint_not_allowed():
+    class ConstraintNotAllowed(Message):
         """
         When adding a column to an existing table, certain constraints can have
         unintentional side effects, like locking the table or introducing
@@ -59,6 +56,8 @@ class AddColumnDisallowConstraints(BaseRule):
         possibly dangerous overhead to confirm the referential integrity of
         each row.
         """
+
+        TEMPLATE = 'column "{col}" has a disallowed constraint'
 
     def enable(self, ctx, config):
         disallowed = config.get('disallowed', [])
@@ -110,7 +109,5 @@ class AddColumnDisallowConstraints(BaseRule):
                 col = node['def'].colname.value
 
                 ctx.report(
-                    self,
-                    'constraint_not_allowed',
-                    params={'col': col},
+                    self.ConstraintNotAllowed(col=col),
                     node=constraint)

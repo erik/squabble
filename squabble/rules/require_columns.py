@@ -3,6 +3,7 @@ import pglast.printers
 
 import squabble.rule
 from squabble import RuleConfigurationException
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -116,11 +117,12 @@ class RequireColumns(BaseRule):
 
     Tags: correctness
     """
-    MESSAGES = {
-        'missing_required_column': '"{tbl}" missing required column "{col}"',
-        'column_wrong_type': ('"{tbl}.{col}" has type "{actual}" expected '
-                              '"{required}"')
-    }
+
+    class MissingRequiredColumn(Message):
+        TEMPLATE = '"{tbl}" missing required column "{col}"'
+
+    class ColumnWrongType(Message):
+        TEMPLATE = '"{tbl}.{col}" has type "{actual}" expected "{required}"'
 
     def enable(self, ctx, config):
         config = config.get('required', [])
@@ -149,9 +151,7 @@ class RequireColumns(BaseRule):
         for col, typ in required.items():
             if col not in columns:
                 ctx.report(
-                    self,
-                    'missing_required_column',
-                    params={'tbl': table_name, 'col': col},
+                    self.MissingRequiredColumn(tbl=table_name, col=col),
                     node=table)
 
                 continue
@@ -160,12 +160,6 @@ class RequireColumns(BaseRule):
             if typ is not None and actual != typ:
                 node = columns[col]['node']
                 ctx.report(
-                    self,
-                    'column_wrong_type',
-                    node=node,
-                    params={
-                        'tbl': table_name,
-                        'col': col,
-                        'required': typ,
-                        'actual': actual
-                    })
+                    self.ColumnWrongType(
+                        tbl=table_name, col=col, required=typ, actual=actual),
+                    node=node)

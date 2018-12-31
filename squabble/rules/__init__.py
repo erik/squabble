@@ -9,19 +9,18 @@ class BaseRule:
     file, and then performing their lint actions inside the callback
     functions.
 
-    Rules represent lint issues using pre-defined IDs, which are
-    stored in a class variable called ``MESSAGES``. Any format string
-    parameters will be filled in later by :func:``BaseRule.format``.
+    Rules represent lint issues using pre-defined message classes, which are
+    defined by creating a child class inheriting from
+    :class:`squabble.message.Message`.
 
     For example:
 
+    >>> import squabble.message
     >>> class MyRule(BaseRule):
-    ...     MESSAGES = {
-    ...         'bad_column_name': 'column {name} is not allowed',
-    ...         'bad_column_type': 'column {name} has bad type {type}'
-    ...     }
+    ...     class BadColumnName(squabble.message.Message):
+    ...         TEMPLATE = 'column {name} is not allowed'
     ...
-    >>> MyRule.format('bad_column_name', {'name': 'foo'})
+    >>> MyRule.BadColumnName(name='foo').format()
     'column foo is not allowed'
     """
 
@@ -61,47 +60,6 @@ class BaseRule:
             'description': split_doc[0],
             'help': help
         }
-
-    @classmethod
-    def format(cls, message_id, params):
-        """
-        >>> class MyRule(BaseRule):
-        ...     MESSAGES = {'message_1': 'something went {status}'}
-        ...
-        >>> MyRule.format('message_1', {'status': 'wrong'})
-        'something went wrong'
-        """
-        template = cls.MESSAGES[message_id]
-        return template.format(**params)
-
-    @classmethod
-    def explain(cls, message_id):
-        """
-        Provide more context around ``message_id``.
-
-        The purpose of this function is to explain to users _why_ the
-        message was raised, and what they can do to resolve the issue.
-
-        The base implementation will look for a function named
-        ``explain_{message_id}`` and return the docstring, or None, if
-        no such function exists.
-
-        Yeah this is kind of weird.
-
-        >>> class MyRule(BaseRule):
-        ...     MESSAGES = {'foo_bar': ...}
-        ...
-        ...     def explain_foo_bar():
-        ...         '''Here is why the rule is relevant...'''
-        >>> MyRule.explain('foo_bar')
-        'Here is why the rule is relevant...'
-        >>> MyRule.explain('baz') is None
-        True
-        """
-        name = 'explain_' + message_id
-
-        if hasattr(cls, name):
-            return getattr(cls, name).__doc__
 
     def enable(self, ctx, config):
         """

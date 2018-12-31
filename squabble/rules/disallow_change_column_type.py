@@ -1,5 +1,6 @@
 from pglast.enums import AlterTableType
 
+from squabble.message import Message
 from squabble.rules import BaseRule
 
 
@@ -16,12 +17,7 @@ class DisallowChangeColumnType(BaseRule):
     Tags: backwards-compatibility
     """
 
-    MESSAGES = {
-        'change_type_not_allowed': ('cannot change type of existing column '
-                                    '"{col}"')
-    }
-
-    def explain_change_type_not_allowed():
+    class ChangeTypeNotAllowed(Message):
         """
         Trying to change the type of an existing column may hold a
         full table lock while all of the rows are modified.
@@ -41,6 +37,8 @@ class DisallowChangeColumnType(BaseRule):
            -- Deploy server code to point to new column
            ALTER TABLE foo DROP COLUMN bar_old;
         """
+
+        TEMPLATE = 'cannot change type of existing column "{col}"'
 
     def enable(self, ctx, _config):
         ctx.register('AlterTableCmd', lambda c, n: self._check(c, n))
@@ -67,8 +65,5 @@ class DisallowChangeColumnType(BaseRule):
 
         ty = node['def'].typeName
 
-        ctx.report(
-            self,
-            'change_type_not_allowed',
-            params={'col': node.name.value},
-            node=ty)
+        issue = self.ChangeTypeNotAllowed(col=node.name.value)
+        ctx.report(issue, node=ty)
