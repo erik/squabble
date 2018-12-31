@@ -5,6 +5,7 @@
    :titlesonly:
 
    api/index
+   rules
 
 
 Indices and tables

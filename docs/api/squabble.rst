@@ -8,7 +8,10 @@ squabble package
 
 .. toctree::
 
-   squabble.rules
+   squabble.cli
    squabble.config
    squabble.lint
+   squabble.message
    squabble.reporter
+   squabble.rule
+   squabble.rules
