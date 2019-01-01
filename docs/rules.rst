@@ -6,7 +6,7 @@ Built-in Rules
 
 AddColumnDisallowConstraints
 ----------------------------
-.. autoclass:: squabble.rules.add_column_disallow_constraint.AddColumnDisallowConstraints
+.. autoclass:: squabble.rules.add_column_disallow_constraints.AddColumnDisallowConstraints
    :members:
    :show-inheritance:
    :exclude-members: enable
