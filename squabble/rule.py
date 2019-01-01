@@ -37,7 +37,8 @@ def _load_builtin_rules():
     """Load the rules that ship with squabble (squabble/rules/*.py)"""
     modules = glob.glob(os.path.dirname(__file__) + '/rules/*.py')
 
-    for mod in modules:
+    # Sort the modules to guarantee stable ordering
+    for mod in sorted(modules):
         mod_name = os.path.basename(mod)[:-3]
 
         if not os.path.isfile(mod) or mod_name.startswith('__'):

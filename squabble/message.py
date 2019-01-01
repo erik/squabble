@@ -1,5 +1,63 @@
 import re
 
+from squabble import logger, SquabbleException
+
+
+class DuplicateMessageCodeException(SquabbleException):
+    def __init__(self, dupe):
+        original = Registry.by_code(dupe.CODE)
+        message = 'Message %s has the same code as %s' % (dupe, original)
+
+        super().__init__(message)
+
+
+class Registry:
+    """
+    Singleton which maps message code values to classes.
+
+    >>> class MyMessage(Message):
+    ...     '''My example message.'''
+    ...     TEMPLATE = '...'
+    ...     CODE = 5678
+    >>> cls = Registry.by_code(5678)
+    >>> cls.explain()
+    'My example message.'
+    >>> cls is MyMessage
+    True
+
+    Duplicate codes are not allowed, and will throw an exception.
+
+    >>> class MyDuplicateMessage(Message):
+    ...     CODE = 5678
+    Traceback (most recent call last):
+      ...
+    squabble.message.DuplicateMessageCodeException: ...
+    """
+
+    _MAP = {}
+    _CODE_COUNTER = 9000
+
+    @classmethod
+    def register(cls, msg):
+        if not hasattr(msg, 'CODE'):
+            setattr(msg, 'CODE', cls._next_code())
+            logger.info('assigning code %s to %s', msg.CODE, msg)
+
+        # Don't allow duplicates
+        if msg.CODE in cls._MAP:
+            raise DuplicateMessageCodeException(msg)
+
+        cls._MAP[msg.CODE] = msg
+
+    @classmethod
+    def by_code(cls, code):
+        return cls._MAP[code]
+
+    @classmethod
+    def _next_code(cls):
+        cls._CODE_COUNTER += 1
+        return cls._CODE_COUNTER
+
 
 class Message:
     """
@@ -10,11 +68,17 @@ class Message:
     as a class member variable named ``TEMPLATE``, which is used to
     display a brief explanation on the command line.
 
+    Messages may also have a ``CODE`` class member, which is used to
+    identify the message. The actual value doesn't matter much, as
+    long as it is unique among all the loaded ``Message``s. If no
+    ``CODE`` is defined, one will be assigned.
+
     >>> class TooManyColumns(Message):
     ...    '''
     ...    This may indicate poor design, consider multiple tables instead.
     ...    '''
     ...    TEMPLATE = 'table "{table}" has > {limit} columns'
+    ...    CODE = 1234
     >>> message = TooManyColumns(table='foo', limit=30)
     >>> message.format()
     'table "foo" has > 30 columns'
@@ -26,10 +90,16 @@ class Message:
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
+    def __init_subclass__(cls, **kwargs):
+        """Assign unique (locally, not globally) message codes."""
+        super().__init_subclass__(**kwargs)
+        Registry.register(cls)
+
     def format(self):
         return self.TEMPLATE.format(**self.kwargs)
 
-    def explain(self):
+    @classmethod
+    def explain(cls):
         """
         Provide more context around this message.
 
@@ -44,10 +114,10 @@ class Message:
         >>> NoDocString().explain() is None
         True
         """
-        if not self.__doc__:
+        if not cls.__doc__:
             return None
 
-        return self.__doc__.strip()
+        return cls.__doc__.strip()
 
     def asdict(self):
         name = self.__class__.__name__
@@ -58,4 +128,5 @@ class Message:
             'message_text': self.format(),
             'message_template': self.TEMPLATE,
             'message_params': self.kwargs,
+            'message_code': self.CODE
         }

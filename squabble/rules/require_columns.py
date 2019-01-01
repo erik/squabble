@@ -102,7 +102,7 @@ class RequireColumns(BaseRule):
 
     Configuration:
 
-    .. code-block:: json
+    ::
 
         {
             "RequireColumns": {
@@ -110,16 +110,18 @@ class RequireColumns(BaseRule):
             }
         }
 
-    If a column type is specified (like `column_foo` in the example
+    If a column type is specified (like ``column_foo`` in the example
     configuration), the linter will make sure that the types match.
 
     Otherwise, only the presence of the column will be checked.
     """
 
     class MissingRequiredColumn(Message):
+        CODE = 1005
         TEMPLATE = '"{tbl}" missing required column "{col}"'
 
     class ColumnWrongType(Message):
+        CODE = 1006
         TEMPLATE = '"{tbl}.{col}" has type "{actual}" expected "{required}"'
 
     def enable(self, ctx, config):

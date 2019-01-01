@@ -25,7 +25,7 @@ class RequirePrimaryKey(BaseRule):
         If no single column will uniquely identify a row, creating a composite
         primary key is also possible.
         """
-
+        CODE = 1002
         TEMPLATE = 'table "{tbl}" does not name a primary key'
 
     def enable(self, ctx, _config):

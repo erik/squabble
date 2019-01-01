@@ -10,6 +10,7 @@ Arguments:
 
 Options:
   -c --config=PATH     Path to configuration file
+  -e --explain=CODE    Show explanation of a rule's message code.
   -h --help            Show this screen
   -p --preset=PRESET   Start with a base preset rule configuration
   -P --list-presets    List the available preset configurations
@@ -29,6 +30,7 @@ import docopt
 from colorama import Style
 
 import squabble
+import squabble.message
 from squabble import config, lint, logger, rule, reporter
 
 
@@ -67,6 +69,9 @@ def dispatch_args(args):
 
     if args['--show-rule']:
         return show_rule(name=args['--show-rule'])
+
+    if args['--explain']:
+        return explain_message(code=args['--explain'])
 
     return run_linter(base_config, args['PATHS'])
 
@@ -146,6 +151,27 @@ def list_rules():
             **color,
             **meta
         }))
+
+
+def explain_message(code):
+    """Print out the more detailed explanation of the given message code."""
+    try:
+        code = int(code)
+        cls = squabble.message.Registry.by_code(code)
+    except (ValueError, KeyError):
+        sys.exit('{bold}Unknown message code:{reset} {code}'.format(
+            bold=Style.BRIGHT,
+            reset=Style.RESET_ALL,
+            code=code
+        ))
+
+    print('{bold}{name}{reset}'.format(
+        bold=Style.BRIGHT,
+        reset=Style.RESET_ALL,
+        name=cls.__name__
+    ))
+
+    print('\t', cls.explain() or 'No additional info.', sep='')
 
 
 def list_presets():

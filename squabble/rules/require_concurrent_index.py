@@ -37,7 +37,7 @@ class RequireConcurrentIndex(BaseRule):
 
            CREATE INDEX CONCURRENTLY users_by_name ON users(name);
         """
-
+        CODE = 1001
         TEMPLATE = 'index "{name}" not created `CONCURRENTLY`'
 
     def enable(self, ctx, config):

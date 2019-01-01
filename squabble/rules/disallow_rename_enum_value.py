@@ -21,6 +21,7 @@ class DisallowRenameEnumValue(BaseRule):
         Renaming an existing enum value may be backwards compatible
         with code that is live in production.
         """
+        CODE = 1000
         TEMPLATE = 'cannot rename existing enum value "{value}"'
 
     def enable(self, ctx, _config):

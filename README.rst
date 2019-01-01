@@ -5,7 +5,7 @@ Catch unsafe SQL migrations.
 
 .. code:: sql
 
-   -- sql/migration.sql:4:46 ERROR: column "uh_oh" has a disallowed constraint
+   -- sql/migration.sql:4:46 ERROR: column "uh_oh" has a disallowed constraint [1001]
    ALTER TABLE big_table ADD COLUMN uh_oh integer DEFAULT 0;
                                                   ^
 
@@ -138,6 +138,7 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
        # Define the different message types that this rule can return
        class TableNotLoudEnough(Message):
            """Add more details about the message here"""
+           CODE = 9876
            TEMPLATE = 'table "{name}" not LOUD ENOUGH'
 
        def enable(self, root_ctx, config):

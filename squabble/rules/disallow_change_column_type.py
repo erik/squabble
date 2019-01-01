@@ -35,7 +35,7 @@ class DisallowChangeColumnType(BaseRule):
            -- Deploy server code to point to new column
            ALTER TABLE foo DROP COLUMN bar_old;
         """
-
+        CODE = 1003
         TEMPLATE = 'cannot change type of existing column "{col}"'
 
     def enable(self, ctx, _config):

@@ -9,11 +9,11 @@ from squabble.rules import BaseRule
 
 class AddColumnDisallowConstraints(BaseRule):
     """
-    Prevent adding a column with certain constraints to an existing table
+    Prevent adding a column with certain constraints to an existing table.
 
     Configuration:
 
-    .. code-block:: json
+    ::
 
        {
            "AddColumnDisallowConstraints": {
@@ -54,7 +54,7 @@ class AddColumnDisallowConstraints(BaseRule):
         possibly dangerous overhead to confirm the referential integrity of
         each row.
         """
-
+        CODE = 1004
         TEMPLATE = 'column "{col}" has a disallowed constraint'
 
     def enable(self, ctx, config):
@@ -80,16 +80,17 @@ class AddColumnDisallowConstraints(BaseRule):
         """
         Node is an `AlterTableCmd`:
 
-        {
-          'AlterTableCmd': {
-            'def': {
-              'ColumnDef': {
-                'colname': 'bar',
-                'constraints': [{'Constraint': {'contype': 2, 'location': 35}}]
+        ::
+            {
+              'AlterTableCmd': {
+                'def': {
+                  'ColumnDef': {
+                    'colname': 'bar',
+                    'constraints': [{'Constraint': {'contype': 2}}]
+                  }
+                }
               }
             }
-          }
-        }
         """
 
         # We only care about adding a column

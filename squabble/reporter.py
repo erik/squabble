@@ -132,11 +132,8 @@ _SIMPLE_FORMAT = '{file}:{line}:{column} {severity}: {message_formatted}'
 
 # Partially pre-format the message since the color codes will be static.
 _COLOR_FORMAT = '{bold}{{file}}:{reset}{{line}}:{{column}}{reset} '\
-    '{red}{{severity}}{reset}: {{message_formatted}}'.format(**{
-        'bold': Style.BRIGHT,
-        'red': Fore.RED,
-        'reset': Style.RESET_ALL,
-    })
+    '{red}{{severity}}{reset}: {{message_formatted}}'\
+    .format(bold=Style.BRIGHT, red=Fore.RED, reset=Style.RESET_ALL)
 
 
 @reporter("plain")
@@ -154,6 +151,9 @@ def color_reporter(issue, file_contents):
     info = _issue_info(issue, file_contents)
 
     output = [_COLOR_FORMAT.format(**info)]
+
+    if 'message_code' in info:
+        output[0] += ' [{message_code}]'.format(**info)
 
     if info['line_text'] != '':
         arrow = ' ' * info['column'] + '^'
