@@ -120,11 +120,8 @@ class Message:
         return cls.__doc__.strip()
 
     def asdict(self):
-        name = self.__class__.__name__
-        snake_name = re.sub('(?!^)([A-Z]+)', r'_\1', name).lower()
-
         return {
-            'message_id': snake_name,
+            'message_id': self.__class__.__name__,
             'message_text': self.format(),
             'message_template': self.TEMPLATE,
             'message_params': self.kwargs,

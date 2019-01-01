@@ -66,7 +66,7 @@ class AddColumnDisallowConstraints(BaseRule):
         constraints = set()
 
         for c in disallowed:
-            ty = self._CONSTRAINT_MAP[c.upper()]
+            ty = self._CONSTRAINT_MAP.get(c.upper())
             if ty is None:
                 raise RuleConfigurationException(
                         self, 'unknown constraint: `%s`' % c)
