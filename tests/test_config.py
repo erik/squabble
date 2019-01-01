@@ -1,3 +1,8 @@
+import copy
+from unittest.mock import patch
+
+import pytest
+
 from squabble import config
 
 
@@ -17,3 +22,48 @@ bar
     }
 
     assert expected == rules
+
+
+def test_get_base_config_without_preset():
+    cfg = config.get_base_config()
+    assert cfg == config.Config(**config.DEFAULT_CONFIG)
+
+
+def test_get_base_config_with_preset():
+    cfg = config.get_base_config('postgres')
+    assert cfg.rules == config.PRESETS['postgres']['config']['rules']
+
+
+def test_unknown_preset():
+    with pytest.raises(config.UnknownPresetException):
+        config.get_base_config(preset_name='asdf')
+
+
+@patch('squabble.config.parse_file_rules')
+def test_apply_file_config(mock_parse):
+    mock_parse.return_value = {'enable': {'baz': {'a': 1}}, 'disable': ['bar']}
+
+    orig = config.Config(reporter='', plugins=[], rules={'foo': {}, 'bar': {}})
+    base = copy.deepcopy(orig)
+
+    modified = config.apply_file_config(base, 'file_name')
+
+    assert modified.rules == {'foo': {}, 'baz': {'a': 1}}
+
+    # Make sure nothing has been mutated
+    assert base == orig
+
+
+@patch('squabble.config.get_vcs_root')
+@patch('os.path.expanduser')
+@patch('os.path.exists')
+def test_discover_config_location(mock_exists, mock_expand, mock_vcs):
+    mock_exists.return_value = False
+    mock_expand.return_value = 'user'
+    mock_vcs.return_value = 'gitrepo'
+
+    config.discover_config_location()
+
+    mock_exists.assert_any_call('./.squabblerc')
+    mock_exists.assert_any_call('gitrepo/.squabblerc')
+    mock_exists.assert_any_call('user/.squabblerc')
