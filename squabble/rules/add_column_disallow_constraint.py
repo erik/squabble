@@ -27,8 +27,6 @@ class AddColumnDisallowConstraints(BaseRule):
       - NOT NULL
       - FOREIGN
       - UNIQUE
-
-    Tags: performance, backwards-compatibility
     """
 
     _CONSTRAINT_MAP = {

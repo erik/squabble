@@ -24,8 +24,6 @@ class RequireConcurrentIndex(BaseRule):
                 "include_new_tables": false
             }
         }
-
-    Tags: performance
     """
 
     class IndexNotConcurrent(Message):

@@ -14,8 +14,6 @@ class DisallowRenameEnumValue(BaseRule):
     .. code-block:: json
 
         { "DisallowChangeEnumValue": {} }
-
-    Tags: backwards-compatibility
     """
 
     class RenameNotAllowed(Message):

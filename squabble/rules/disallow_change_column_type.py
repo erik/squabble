@@ -13,8 +13,6 @@ class DisallowChangeColumnType(BaseRule):
     .. code-block:: json
 
        { "DisallowChangeColumnType": {} }
-
-    Tags: backwards-compatibility
     """
 
     class ChangeTypeNotAllowed(Message):

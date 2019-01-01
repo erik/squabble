@@ -114,8 +114,6 @@ class RequireColumns(BaseRule):
     configuration), the linter will make sure that the types match.
 
     Otherwise, only the presence of the column will be checked.
-
-    Tags: correctness
     """
 
     class MissingRequiredColumn(Message):

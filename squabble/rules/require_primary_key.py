@@ -15,8 +15,6 @@ class RequirePrimaryKey(BaseRule):
     .. code-block:: json
 
         { "RequirePrimaryKey": {} }
-
-    Tags: performance, correctness
     """
 
     class MissingPrimaryKey(Message):
