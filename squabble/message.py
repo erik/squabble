@@ -37,6 +37,10 @@ class Registry:
 
     @classmethod
     def register(cls, msg):
+        """
+        Add ``msg`` to the registry, and assign a ``CODE`` value if not
+        explicitly specified.
+        """
         if not hasattr(msg, 'CODE'):
             setattr(msg, 'CODE', cls._next_code())
             logger.info('assigning code %s to %s', msg.CODE, msg)
@@ -49,6 +53,10 @@ class Registry:
 
     @classmethod
     def by_code(cls, code):
+        """
+        Return the :class:`squabble.message.Message` class identified by
+        ``code``, raising a :class:`KeyError` if it doesn't exist.
+        """
         return cls._MAP[code]
 
     @classmethod
@@ -68,7 +76,7 @@ class Message:
 
     Messages may also have a ``CODE`` class member, which is used to
     identify the message. The actual value doesn't matter much, as
-    long as it is unique among all the loaded ``Message``s. If no
+    long as it is unique among all the loaded ``Message`` s. If no
     ``CODE`` is defined, one will be assigned.
 
     >>> class TooManyColumns(Message):

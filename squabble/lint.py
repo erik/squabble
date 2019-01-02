@@ -90,6 +90,23 @@ class LintContext:
     """
     Contains the node tag callback hooks enabled at or below the `parent_node`
     passed to the call to `traverse`.
+
+    >>> import pglast
+    >>> ast = pglast.Node(pglast.parse_sql('''
+    ...   CREATE TABLE foo (id INTEGER PRIMARY KEY);
+    ... '''))
+    >>> ctx = LintContext(session=...)
+    >>>
+    >>> def create_stmt(child_ctx, node):
+    ...     print('create stmt')
+    ...     child_ctx.register('ColumnDef', lambda _c, _n: print('from child'))
+    ...
+    >>> ctx.register('CreateStmt', create_stmt)
+    >>> ctx.register('ColumnDef', lambda _c, _n: print('from root'))
+    >>> ctx.traverse(ast)
+    create stmt
+    from child
+    from root
     """
     def __init__(self, session):
         self._hooks = {}

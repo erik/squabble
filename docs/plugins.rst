@@ -1,10 +1,25 @@
-Writing Your Own Lint Rules
-===========================
+Writing Plugins
+===============
 
-Squabble supports loading rule definitions from arbitrary plugin
-directories. Every Python file from directories in the configuration's
-``"plugin"`` section will be loaded and any classes that inherit from
-:func:`squabble.rules.BaseRule` will be registered and available for use.
+Squabble supports loading rule definitions from directories specified in the
+``.squabblerc`` configuration file.
+
+Every Python file in the list of directories will be loaded and any classes
+that inherit from :class:`squabble.rules.BaseRule` will be registered and
+available for use.
+
+
+Configuration
+-------------
+
+::
+
+   {
+     "plugins": [
+       "/path/to/plugins/",
+       ...
+     ]
+   }
 
 Concepts
 --------
@@ -12,11 +27,15 @@ Concepts
 Rules
 ~~~~~
 
-Rules are classes which inherit from :func:`squabble.rules.BaseRule` and
+Rules are classes which inherit from :class:`squabble.rules.BaseRule` and
 are responsible for checking the abstract syntax tree of a SQL file.
 
 At a minimum, each rule will define ``def enable(self, root_context, config)``,
 which is responsible for doing any initialization when the rule is enabled.
+
+Rules register callback functions to trigger when certain nodes of the abstract
+syntax tree are hit. Rules will report messages_ to indicate any issues
+discovered.
 
 For example ::
 
@@ -30,11 +49,70 @@ Could be configured with this ``.squabblerc`` ::
 
 ``enable()`` would be passed ``config={"foo": "bar"}``.
 
+.. _messages:
+
 Messages
 ~~~~~~~~
 
+Messages inherit from :class:`squabble.message.Message`, and are used to define
+specific kinds of lint exceptions a rule can uncover.
+
+At a bare minimum, each message class needs a ``TEMPLATE`` class variable,
+which is used when formatting the message to be printed on the command line.
+
+For example ::
+
+  class BadlyNamedColumn(squabble.message.Message):
+      """
+      Here are some more details about ``BadlyNamedColumn``.
+
+      This is where you would explain why this message is relevant,
+      how to resolve it, etc.
+      """
+
+      TEMPLATE = 'tried to {foo} when you should have done {bar}!'
+
+  >>> msg = MyMessage(foo='abc', bar='xyz')
+  >>> msg.format()
+  'tried to abc when you should have done xyz'
+  >>> msg.explain()
+  'Here are some more details ...
+
+Messages may also define a ``CODE`` class variable, which is an integer which
+uniquely identifies the class. If not explicitly specified, one will be
+assigned, starting at ``9000``. These can be used by the ``--explain`` command
+line flag ::
+
+  $ squabble --explain 9001
+  BadlyNamedColumn
+      Here are some more details about ``BadlyNamedColumn``.
+
+      ...
+
 Lint context
 ~~~~~~~~~~~~
+
+Each instance of :class:`squabble.lint.LintContext` holds the callback
+functions that have been registered at or below a particular node in the
+abstract syntax tree, as well as being responsible for reporting any messages
+that get raised.
+
+When the ``enable()`` function for a class inheriting from
+:class:`squabble.rules.BaseRule` is called, it will be passed a context
+pointing to the root node of the syntax tree. Every callback function will be
+passed a context scoped to the node that triggered the callback.
+
+::
+
+   def enable(root_context, _config):
+       root_context.register('CreateStmt', create_table_callback)
+
+   def create_table_callback(child_context, node):
+       # register a callback that is only scoped to this ``node``
+       child_context.register('ColumnDef', column_def_callback):
+
+   def column_def_callback(child_context, node):
+       ...
 
 Details
 -------
@@ -63,7 +141,7 @@ bindings <https://github.com/lelit/pglast/tree/master/pglast/enums>`__.
 Example Rule
 ------------
 
-.. code:: python
+.. code-block:: python
 
    import squabble.rule
    from squabble.message import Message
