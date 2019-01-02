@@ -11,15 +11,17 @@ class DisallowRenameEnumValue(BaseRule):
 
     Configuration:
 
-    .. code-block:: json
+    ::
 
         { "DisallowChangeEnumValue": {} }
     """
 
     class RenameNotAllowed(Message):
         """
-        Renaming an existing enum value may be backwards compatible
-        with code that is live in production.
+        Renaming an existing enum value may not be backwards compatible
+        with code that is live in production, and may cause errors
+        (either from the database or application) if the old enum
+        value is read or written.
         """
         CODE = 1000
         TEMPLATE = 'cannot rename existing enum value "{value}"'
