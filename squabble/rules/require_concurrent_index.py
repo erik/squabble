@@ -15,9 +15,7 @@ class RequireConcurrentIndex(BaseRule):
     known to be empty. This can be changed with the option
     `"include_new_tables": true`
 
-    Configuration:
-
-    .. code-block:: json
+    Configuration: ::
 
         {
             "RequireConcurrentIndex": {

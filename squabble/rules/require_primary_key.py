@@ -10,9 +10,7 @@ class RequirePrimaryKey(BaseRule):
     """
     Require that all new tables specify a PRIMARY KEY constraint.
 
-    Configuration:
-
-    .. code-block:: json
+    Configuration: ::
 
         { "RequirePrimaryKey": {} }
     """

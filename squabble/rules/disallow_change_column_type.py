@@ -8,9 +8,7 @@ class DisallowChangeColumnType(BaseRule):
     """
     Prevent changing the type of an existing column.
 
-    Configuration:
-
-    .. code-block:: json
+    Configuration: ::
 
        { "DisallowChangeColumnType": {} }
     """
