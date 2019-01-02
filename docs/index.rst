@@ -1,12 +1,12 @@
-.. include:: ../README.rst
-
 .. toctree::
-   :maxdepth: 2
-   :titlesonly:
+   :maxdepth: 3
+   :hidden:
 
-   api/index
    rules
+   plugins
+   api/index
 
+.. include:: ../README.rst
 
 Indices and tables
 ==================

@@ -1,7 +1,22 @@
 Built-in Rules
 ==============
 
-.. contents::
+Squabble ships with several rules that are focused mostly on
+preventing unsafe schema migrations. To enable these rules,
+reference them in your ``.squabblerc`` configuration file.
+
+For example: ::
+
+  {
+    "rules": {
+      "AddColumnDisallowConstraints": {
+        "disallowed": ["DEFAULT"]
+      },
+      "RequirePrimaryKey": {}
+    }
+  }
+
+.. contents:: Available Rules
    :local:
 
 AddColumnDisallowConstraints

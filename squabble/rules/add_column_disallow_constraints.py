@@ -11,9 +11,7 @@ class AddColumnDisallowConstraints(BaseRule):
     """
     Prevent adding a column with certain constraints to an existing table.
 
-    Configuration:
-
-    ::
+    Configuration: ::
 
        {
            "AddColumnDisallowConstraints": {
