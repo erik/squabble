@@ -6,7 +6,6 @@ import pglast
 
 from squabble.rules import Registry
 
-
 _LintIssue = collections.namedtuple('LintIssue', [
     'message',
     'message_text',
@@ -24,11 +23,9 @@ class LintIssue(_LintIssue):
     pass
 
 
-def parse_file(file_name):
-    with open(file_name, 'r') as fp:
-        contents = fp.read()
-
-    return pglast.Node(pglast.parse_sql(contents))
+def _parse_string(text):
+    """Use ``pglast`` to turn ``text`` into a SQL AST."""
+    return pglast.Node(pglast.parse_sql(text))
 
 
 def _configure_rules(rule_config):
@@ -43,11 +40,15 @@ def _configure_rules(rule_config):
 
 def check_file(config, file_name):
     """
-    Return a list of lint issues from using the given config to lint
-    `file_name`.
+    Return a list of lint issues from using ``config`` to lint
+    ``file_name``.
     """
+
+    with open(file_name, 'r') as fp:
+        text = fp.read()
+
     rules = _configure_rules(config.rules)
-    s = Session(rules, file_name)
+    s = Session(rules, text, file_name)
     return s.lint()
 
 
@@ -57,23 +58,24 @@ class Session:
     class exists mainly to hold the list of issues returned by the enabled
     rules.
     """
-    def __init__(self, rules, file_name):
+    def __init__(self, rules, sql_text, file_name):
         self._rules = rules
-        self._file = file_name
+        self._sql = sql_text
         self._issues = []
+        self._file_name = file_name
 
     def report_issue(self, issue):
-        i = issue._replace(file=self._file)
+        i = issue._replace(file=self._file_name)
         self._issues.append(i)
 
     def lint(self):
-        root_ctx = LintContext(self)
+        root_ctx = Context(self)
 
         for rule, config in self._rules:
             rule.enable(root_ctx, config)
 
         try:
-            ast = parse_file(self._file)
+            ast = _parse_string(self._sql)
             root_ctx.traverse(ast)
 
         except pglast.parser.ParseError as exc:
@@ -86,7 +88,7 @@ class Session:
         return self._issues
 
 
-class LintContext:
+class Context:
     """
     Contains the node tag callback hooks enabled at or below the `parent_node`
     passed to the call to `traverse`.
@@ -95,7 +97,7 @@ class LintContext:
     >>> ast = pglast.Node(pglast.parse_sql('''
     ...   CREATE TABLE foo (id INTEGER PRIMARY KEY);
     ... '''))
-    >>> ctx = LintContext(session=...)
+    >>> ctx = Context(session=...)
     >>>
     >>> def create_stmt(child_ctx, node):
     ...     print('create stmt')
@@ -130,7 +132,7 @@ class LintContext:
             if tag not in self._hooks:
                 continue
 
-            child_ctx = LintContext(self._session)
+            child_ctx = Context(self._session)
             for hook in self._hooks[tag]:
                 hook(child_ctx, node)
 
@@ -152,7 +154,7 @@ class LintContext:
         Register `fn` to be called whenever `node_tag` node is visited.
 
         >>> session = ...
-        >>> ctx = LintContext(session)
+        >>> ctx = Context(session)
         >>> ctx.register('CreateStmt', lambda ctx, node: ...)
         """
         if node_tag not in self._hooks:

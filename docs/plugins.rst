@@ -89,10 +89,10 @@ line flag ::
 
       ...
 
-Lint context
-~~~~~~~~~~~~
+Context
+~~~~~~~
 
-Each instance of :class:`squabble.lint.LintContext` holds the callback
+Each instance of :class:`squabble.lint.Context` holds the callback
 functions that have been registered at or below a particular node in the
 abstract syntax tree, as well as being responsible for reporting any messages
 that get raised.

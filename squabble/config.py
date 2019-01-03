@@ -5,8 +5,7 @@ import os.path
 import re
 import subprocess
 
-from squabble import logger, SquabbleException
-
+from squabble import SquabbleException, logger
 
 Config = collections.namedtuple('Config', [
     'reporter',
@@ -41,16 +40,27 @@ PRESETS = {
 
 
 class UnknownPresetException(SquabbleException):
+    """Raised when user tries to apply a preset that isn't defined."""
     def __init__(self, preset):
         super().__init__('unknown preset: "%s"' % preset)
 
 
 def discover_config_location():
+    """
+    Try to locate a config file in some likely locations.
+
+    Used when no config path is specified explicitly. In order, this
+    will check for a file named ``.squabblerc``:
+
+    - in the current directory.
+    - in the root of the repository (if working in a git repo).
+    - in the user's home directory.
+    """
     logger.debug('No config file given, trying to discover')
 
     possible_dirs = [
         '.',
-        get_vcs_root(),
+        _get_vcs_root(),
         os.path.expanduser('~')
     ]
 
@@ -67,7 +77,7 @@ def discover_config_location():
     return None
 
 
-def get_vcs_root():
+def _get_vcs_root():
     """
     Return the path to the root of the Git repository for the current directory,
     or empty string if not in a repository.
@@ -95,7 +105,7 @@ def get_base_config(preset_name=None):
     })
 
 
-def parse_config_file(config_file):
+def _parse_config_file(config_file):
     if not config_file:
         return {}
 
@@ -104,8 +114,15 @@ def parse_config_file(config_file):
 
 
 def load_config(config_file, preset_name=None):
+    """
+    Load configuration from a file, optionally applying a predefined
+    set of rules.
+
+    :param config_file: Path to JSON file containing user configuration.
+    :type config_file: str
+    """
     base = get_base_config(preset_name)
-    config = parse_config_file(config_file)
+    config = _parse_config_file(config_file)
 
     rules = copy.deepcopy(base.rules)
     for name, rule in config.get('rules', {}).items():
@@ -126,7 +143,7 @@ def apply_file_config(base, file_name):
     # Operate on a copy so we don't mutate the base config
     file_rules = copy.deepcopy(base.rules)
 
-    rules = parse_file_rules(file_name)
+    rules = _parse_file_rules(file_name)
 
     for rule, opts in rules['enable'].items():
         file_rules[rule] = opts
@@ -137,20 +154,20 @@ def apply_file_config(base, file_name):
     return base._replace(rules=file_rules)
 
 
-def parse_file_rules(file_name):
+def _parse_file_rules(file_name):
     with open(file_name, 'r') as fp:
         text = fp.read()
 
-    return extract_file_rules(text)
+    return _extract_file_rules(text)
 
 
-def extract_file_rules(text):
+def _extract_file_rules(text):
     """
     Try to extract any file-level rule additions/suppressions.
 
     Valid lines are SQL line comments that enable or disable specific rules.
 
-    >>> rules = extract_file_rules('-- enable:rule1 arr=a,b,c')
+    >>> rules = _extract_file_rules('-- enable:rule1 arr=a,b,c')
     >>> rules['disable']
     []
     >>> rules['enable']

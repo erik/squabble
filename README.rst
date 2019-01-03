@@ -5,17 +5,17 @@ Catch unsafe SQL migrations.
 
 .. code:: console
 
-   $ squabble sql/migration.sql
-   sql/migration.sql:4:46 ERROR: column "uh_oh" has a disallowed constraint [1004]
-   ALTER TABLE big_table ADD COLUMN uh_oh integer DEFAULT 0;
-                                                  ^
-   # Use --explain to get more information on a lint violation
-   $ squabble --explain 1004
-   ConstraintNotAllowed
-        When adding a column to an existing table, certain constraints can have
-        unintentional side effects, like locking the table or introducing
-        performance issues.
-        ...
+  $ squabble sql/migration.sql
+  sql/migration.sql:4:46 ERROR: column "uh_oh" has a disallowed constraint [1004]
+  ALTER TABLE big_table ADD COLUMN uh_oh integer DEFAULT 0;
+                                                 ^
+  # Use --explain to get more information on a lint violation
+  $ squabble --explain 1004
+  ConstraintNotAllowed
+       When adding a column to an existing table, certain constraints can have
+       unintentional side effects, like locking the table or introducing
+       performance issues.
+       ...
 
 Squabble works to help automate the process of reviewing SQL migrations
 by catching simple mistakes, such as:
@@ -42,9 +42,9 @@ Installation
    $ pip3 install squabble
    $ squabble --help
 
-..
+.. note::
 
-   Note: Squabble is only supported on Python 3.5+
+   Squabble is only supported on Python 3.5+
 
 If you’d like to install from source:
 

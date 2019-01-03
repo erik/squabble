@@ -5,8 +5,7 @@ import json
 
 import pytest
 
-from squabble import rule, config, lint, reporter
-
+from squabble import config, lint, reporter, rule
 
 SQL_FILES = glob.glob('tests/sql/*.sql')
 OUTPUT_MARKER = '-- >>> '

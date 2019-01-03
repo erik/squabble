@@ -24,14 +24,14 @@ import glob
 import json
 import os.path
 import sys
-from pkg_resources import get_distribution
 
 import docopt
 from colorama import Style
+from pkg_resources import get_distribution
 
 import squabble
 import squabble.message
-from squabble import config, lint, logger, rule, reporter
+from squabble import config, lint, logger, reporter, rule
 
 
 def main():
@@ -92,7 +92,7 @@ def run_linter(base_config, paths):
     reporter.report(base_config.reporter, issues)
 
     # Make sure we have an error status if something went wrong.
-    return 1 if len(issues) > 0 else 0
+    return 1 if issues else 0
 
 
 def collect_files(paths):

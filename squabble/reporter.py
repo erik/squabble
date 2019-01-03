@@ -4,16 +4,16 @@ import functools
 import json
 import sys
 
-from colorama import Fore, Style
 import pglast
+from colorama import Fore, Style
 
 import squabble
-
 
 _REPORTERS = {}
 
 
 class UnknownReporterException(squabble.SquabbleException):
+    """Raised when a configuration references a reporter that doesn't exist."""
     def __init__(self, name):
         super().__init__('unknown reporter: "%s"' % name)
 
@@ -23,9 +23,10 @@ def reporter(name):
     Decorator to register function as a callback when the config sets the
     `"reporter"` config value to `name`.
 
-    The wrapped function will be called with each `LintIssue` and the
-    contents of the file being linted. Each reporter should return a
-    list of lines of output which will be printed to stderr.
+    The wrapped function will be called with each
+    :class:`squabble.lint.LintIssue` and the contents of the file
+    being linted. Each reporter should return a list of lines of
+    output which will be printed to stderr.
 
     >>> from squabble.lint import LintIssue
     >>> @reporter('no_info')
@@ -67,9 +68,9 @@ def report(reporter_name, issues):
             _print_err(line)
 
 
-def location_for_issue(issue):
+def _location_for_issue(issue):
     """
-    Correctly return the offset into the file for this issue, or None if it
+    Return the offset into the file for this issue, or None if it
     cannot be determined.
     """
     if issue.node and issue.node.location != pglast.Missing:
@@ -78,13 +79,19 @@ def location_for_issue(issue):
     return issue.location
 
 
-def issue_to_file_location(issue, contents):
+def _issue_to_file_location(issue, contents):
     """
-    Given a `LintIssue` (which may or may not have a `pglast.Node` with a
-    `location` field) and the contents of the file containing that node, return
-    the (line_str, line, column) that node is located at, or `('', 1, 0)`.
+    Given an issue (which may or may not have a :class:`pglast.Node` with a
+    ``location`` field) and the contents of the file containing that
+    node, return the ``(line_str, line, column)`` that node is located at,
+    or ``('', 1, 0)``.
+
+    :param issue:
+    :type issue: :class:`squabble.lint.LintIssue`
+    :param contents: Full contents of the file being linted, as a string.
+    :type contents: str
     """
-    loc = location_for_issue(issue)
+    loc = _location_for_issue(issue)
 
     if loc is None:
         return ('', 1, 0)
@@ -115,7 +122,7 @@ def _format_message(issue):
 
 def _issue_info(issue, file_contents):
     """Return a dictionary of metadata for an issue."""
-    line, line_num, column = issue_to_file_location(issue, file_contents)
+    line, line_num, column = _issue_to_file_location(issue, file_contents)
     formatted = _format_message(issue)
 
     return {
@@ -147,7 +154,10 @@ def plain_text_reporter(issue, file_contents):
 
 @reporter('color')
 def color_reporter(issue, file_contents):
-    """Extension of `plain`, uses ANSI color and shows error location."""
+    """
+    Extension of :func:`squabble.reporter.plain_text_reporter`, uses
+    ANSI color and shows error location.
+    """
     info = _issue_info(issue, file_contents)
 
     output = [_COLOR_FORMAT.format(**info)]
@@ -164,7 +174,7 @@ def color_reporter(issue, file_contents):
 
 
 @reporter('json')
-def json_reporter(issue, file_contents):
+def json_reporter(issue, _file_contents):
     """Dump each issue as a JSON dictionary"""
 
     # pglast nodes aren't JSON serializable

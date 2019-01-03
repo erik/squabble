@@ -1,4 +1,4 @@
-from squabble import logger, SquabbleException
+from squabble import SquabbleException, logger
 
 
 class DuplicateMessageCodeException(SquabbleException):

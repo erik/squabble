@@ -4,7 +4,7 @@ import importlib
 import importlib.util as import_util
 import os.path
 
-from squabble import logger, UnknownRuleException
+from squabble import UnknownRuleException, logger
 
 
 def _load_plugin(path):
@@ -47,7 +47,7 @@ def _load_builtin_rules():
         importlib.import_module('squabble.rules.' + mod_name)
 
 
-def load_rules(plugin_paths=[]):
+def load_rules(plugin_paths=None):
     """
     Load built in rules as well as any custom rules contained in the
     directories in `plugin_paths`.
@@ -55,6 +55,7 @@ def load_rules(plugin_paths=[]):
     _load_builtin_rules()
 
     # Import plugins last so their naming takes precedence
+    plugin_paths = plugin_paths or []
     for path in plugin_paths:
         _load_plugin(path)
 

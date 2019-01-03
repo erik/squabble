@@ -14,7 +14,7 @@ bar
 -- disable:abc enable:xyz
 '''
 
-    rules = config.extract_file_rules(text)
+    rules = config._extract_file_rules(text)
 
     expected = {
         'enable': {'foo': {'k1': 'v1', 'k2': 'v2'}},
@@ -39,7 +39,7 @@ def test_unknown_preset():
         config.get_base_config(preset_name='asdf')
 
 
-@patch('squabble.config.parse_file_rules')
+@patch('squabble.config._parse_file_rules')
 def test_apply_file_config(mock_parse):
     mock_parse.return_value = {'enable': {'baz': {'a': 1}}, 'disable': ['bar']}
 
@@ -54,7 +54,7 @@ def test_apply_file_config(mock_parse):
     assert base == orig
 
 
-@patch('squabble.config.get_vcs_root')
+@patch('squabble.config._get_vcs_root')
 @patch('os.path.expanduser')
 @patch('os.path.exists')
 def test_discover_config_location(mock_exists, mock_expand, mock_vcs):

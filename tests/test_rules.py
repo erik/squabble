@@ -6,8 +6,8 @@ import pytest
 
 import squabble.rule
 from squabble import RuleConfigurationException, UnknownRuleException
-from squabble.rules.add_column_disallow_constraints \
-    import AddColumnDisallowConstraints
+from squabble.rules.add_column_disallow_constraints import \
+    AddColumnDisallowConstraints
 
 
 class TestDisallowConstraints(unittest.TestCase):
