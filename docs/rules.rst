@@ -33,6 +33,13 @@ DisallowChangeColumnType
    :show-inheritance:
    :exclude-members: enable
 
+DisallowFloatTypes
+------------------------
+.. autoclass:: squabble.rules.disallow_float_types.DisallowFloatTypes
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
 DisallowRenameEnumValue
 -----------------------
 .. autoclass:: squabble.rules.disallow_rename_enum_value.DisallowRenameEnumValue
