@@ -1,6 +1,8 @@
 squabble
 ========
 
+|build-status| |docs| |pypi|
+
 Catch unsafe SQL migrations.
 
 .. code:: console
@@ -115,3 +117,15 @@ This project would not be possible without:
 -  `pglast <https://github.com/lelit/pglast>`__ - Python bindings to
    libpg_query
 -  Postgres - …obviously
+
+.. |build-status| image:: https://img.shields.io/travis/erik/squabble.svg?style=flat
+    :alt: build status
+    :target: https://travis-ci.org/erik/squabble
+
+.. |docs| image:: https://readthedocs.org/projects/squabble/badge/?version=latest
+    :alt: Documentation Status
+    :target: https://squabble.readthedocs.io/en/latest/?badge=latest
+
+.. |pypi| image:: https://img.shields.io/pypi/v/squabble.svg
+   :alt: PyPI version
+   :target: https://pypi.org/project/squabble
