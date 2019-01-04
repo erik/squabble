@@ -1,12 +1,13 @@
 """ linting engine """
 
 import collections
+import enum
 
 import pglast
 
 from squabble.rules import Registry
 
-_LintIssue = collections.namedtuple('LintIssue', [
+_LintIssue = collections.namedtuple('_LintIssue', [
     'message',
     'message_text',
     'node',
@@ -21,6 +22,21 @@ _LintIssue.__new__.__defaults__ = (None,) * len(_LintIssue._fields)
 
 class LintIssue(_LintIssue):
     pass
+
+
+class Severity(enum.Enum):
+    """
+    Enumeration describing the relative severity of a :class:`~LintIssue`.
+
+    By themselves, these values don't mean much, but are meant to
+    convey the likely hood that a detected issue is truly
+    problematic. For example, a syntax error in a migration would be
+    ``CRITICAL``, but perhaps a naming inconsistency would be ``LOW``.
+    """
+    LOW = 'LOW'
+    MEDIUM = 'MEDIUM'
+    HIGH = 'HIGH'
+    CRITICAL = 'CRITICAL'
 
 
 def _parse_string(text):
@@ -69,6 +85,10 @@ class Session:
         self._issues.append(i)
 
     def lint(self):
+        """
+        Run the linter on SQL given in constructor, returning a list of
+        :class:`~LintIssue` discovered.
+        """
         root_ctx = Context(self)
 
         for rule, config in self._rules:
@@ -80,7 +100,7 @@ class Session:
 
         except pglast.parser.ParseError as exc:
             root_ctx.report_issue(LintIssue(
-                severity='ERROR',
+                severity=Severity.CRITICAL,
                 message_text=exc.args[0],
                 location=exc.location
             ))
@@ -170,7 +190,7 @@ class Context:
         self.report_issue(LintIssue(
             message=message,
             node=node,
-            severity=severity or 'ERROR',
+            severity=severity or Severity.MEDIUM,
             # This is filled in later
             file=None,
         ))

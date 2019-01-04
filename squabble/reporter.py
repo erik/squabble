@@ -8,6 +8,7 @@ import pglast
 from colorama import Fore, Style
 
 import squabble
+from squabble.lint import Severity
 
 _REPORTERS = {}
 
@@ -126,12 +127,13 @@ def _issue_info(issue, file_contents):
     formatted = _format_message(issue)
 
     return {
+        **issue._asdict(),
+        **(issue.message.asdict() if issue.message else {}),
         'line_text': line,
         'line': line_num,
         'column': column,
         'message_formatted': formatted,
-        **issue._asdict(),
-        **(issue.message.asdict() if issue.message else {})
+        'severity': issue.severity.name,
     }
 
 
@@ -139,8 +141,8 @@ _SIMPLE_FORMAT = '{file}:{line}:{column} {severity}: {message_formatted}'
 
 # Partially pre-format the message since the color codes will be static.
 _COLOR_FORMAT = '{bold}{{file}}:{reset}{{line}}:{{column}}{reset} '\
-    '{red}{{severity}}{reset}: {{message_formatted}}'\
-    .format(bold=Style.BRIGHT, red=Fore.RED, reset=Style.RESET_ALL)
+    '{{severity}} {{message_formatted}}'\
+    .format(bold=Style.BRIGHT, reset=Style.RESET_ALL)
 
 
 @reporter("plain")
@@ -152,6 +154,14 @@ def plain_text_reporter(issue, file_contents):
     ]
 
 
+_SEVERITY_COLOR = {
+    Severity.CRITICAL: Fore.RED,
+    Severity.HIGH: Fore.RED,
+    Severity.MEDIUM: Fore.YELLOW,
+    Severity.LOW: Fore.BLUE,
+}
+
+
 @reporter('color')
 def color_reporter(issue, file_contents):
     """
@@ -159,6 +169,11 @@ def color_reporter(issue, file_contents):
     ANSI color and shows error location.
     """
     info = _issue_info(issue, file_contents)
+    info['severity'] = '{color}{severity}{reset}'.format(
+        color=_SEVERITY_COLOR[issue.severity],
+        severity=issue.severity.name,
+        reset=Style.RESET_ALL
+    )
 
     output = [_COLOR_FORMAT.format(**info)]
 

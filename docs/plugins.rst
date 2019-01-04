@@ -144,6 +144,7 @@ Example Rule
 .. code-block:: python
 
    import squabble.rule
+   from squabble.lint import Severity
    from squabble.message import Message
    from squabble.rules import BaseRule
 
@@ -193,4 +194,5 @@ Example Rule
                # Report an error if this table was not SCREAMING_CASE
                ctx.report(
                    self.TableNotLoudEnough(name=table_name),
-                   node=node.relation)
+                   node=node.relation,
+                   severity=Severity.HIGH)
