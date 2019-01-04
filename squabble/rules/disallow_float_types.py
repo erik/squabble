@@ -1,6 +1,7 @@
 import pglast
 
 import squabble.rule
+from squabble.lint import Severity
 from squabble.message import Message
 from squabble.rules import BaseRule
 
@@ -86,4 +87,4 @@ class DisallowFloatTypes(BaseRule):
         col_type = _type_name_to_string(node.typeName)
 
         if col_type in self._INEXACT_TYPES:
-            ctx.report(self.LossyFloatType(), node=node)
+            ctx.report(self.LossyFloatType(), node=node, severity=Severity.LOW)
