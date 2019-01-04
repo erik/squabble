@@ -1,8 +1,8 @@
 import os.path
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
-__version__ = '1.0.0rc3'
+__version__ = '1.0.0rc4'
 
 
 readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
@@ -16,7 +16,7 @@ setup(
     long_description=long_description,
     author='Erik Price',
     url='https://github.com/erik/squabble',
-    packages=['squabble'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'squabble = squabble.__main__:main',
