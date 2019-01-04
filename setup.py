@@ -1,12 +1,19 @@
+import os.path
+
 from setuptools import setup
 
-__version__ = '1.0.0rc1'
+__version__ = '1.0.0rc2'
 
+
+readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
+with open(readme_path) as fp:
+    long_description = fp.read()
 
 setup(
     name='squabble',
     version=__version__,
     description='An extensible linter for SQL',
+    long_description=long_description,
     author='Erik Price',
     url='https://github.com/erik/squabble',
     packages=['squabble'],
