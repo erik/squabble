@@ -5,7 +5,7 @@ import enum
 
 import pglast
 
-from squabble.rules import Registry
+from squabble.rule import Registry
 
 _LintIssue = collections.namedtuple('_LintIssue', [
     'message',
