@@ -113,13 +113,18 @@ def _parse_config_file(config_file):
         return json.load(fp)
 
 
-def load_config(config_file, preset_name=None):
+def load_config(config_file, preset_name=None, reporter_name=None):
     """
     Load configuration from a file, optionally applying a predefined
     set of rules.
 
     :param config_file: Path to JSON file containing user configuration.
     :type config_file: str
+    :param preset_name: Preset to use as a base before applying user
+                        configuration.
+    :type preset_name: str
+    :param reporter_name: Override the reporter named in configuration.
+    :type reporter_name: str
     """
     base = get_base_config(preset_name)
     config = _parse_config_file(config_file)
@@ -129,7 +134,7 @@ def load_config(config_file, preset_name=None):
         rules[name] = rule
 
     return Config(
-        reporter=config.get('reporter', base.reporter),
+        reporter=reporter_name or config.get('reporter', base.reporter),
         plugins=config.get('plugins', base.plugins),
         rules=rules
     )

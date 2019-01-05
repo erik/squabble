@@ -207,7 +207,7 @@ _SQLINT_FORMAT = '{file}:{line}:{column}:{severity} {message_formatted}'
 
 
 @reporter('sqlint')
-def sqlint_reporter(issue, _contents):
+def sqlint_reporter(issue, file_contents):
     """
     Format compatible with ``sqlint``, which is already integrated into Flycheck
     and other editor linting frameworks.
@@ -216,7 +216,7 @@ def sqlint_reporter(issue, _contents):
     levels: ``ERROR`` and ``WARNING``.
     """
 
-    error_level = set(Severity.HIGH, Severity.CRITICAL)
+    error_level = {Severity.HIGH, Severity.CRITICAL}
 
     info = _issue_info(issue, file_contents)
     info['severity'] = 'ERROR' if issue.severity in error_level else 'WARNING'

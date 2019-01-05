@@ -14,6 +14,7 @@ Options:
   -h --help            Show this screen
   -p --preset=PRESET   Start with a base preset rule configuration
   -P --list-presets    List the available preset configurations
+  --reporter=REPORTER  Use REPORTER for output rather than one named in config.
   -r --show-rule=RULE  Show detailed information about RULE
   -R --list-rules      Print out information about all available rules
   -V --verbose         Turn on debug level logging
@@ -58,7 +59,10 @@ def dispatch_args(args):
     if config_file and not os.path.exists(config_file):
         sys.exit('%s: no such file or directory' % config_file)
 
-    base_config = config.load_config(config_file, preset_name=args['--preset'])
+    base_config = config.load_config(
+        config_file,
+        preset_name=args['--preset'],
+        reporter_name=args['--reporter'])
 
     # Load all of the rule classes into memory (need to do this now to
     # be able to list all rules / show rule details)
