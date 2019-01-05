@@ -4,21 +4,24 @@ Usage:
   squabble (-h | --help)
 
 Arguments:
-  PATHS                Paths to check. If given a directory, will
-                       recursively traverse the path and lint all files ending
-                       in `.sql` [default: -].
+  PATHS  Paths to check. If given a directory, will recursively traverse the
+         path and lint all files ending in `.sql` [default: -].
 
-Options:
-  -c --config=PATH     Path to configuration file
+Commands:
+
   -e --explain=CODE    Show explanation of a rule's message code.
-  -h --help            Show this screen
-  -p --preset=PRESET   Start with a base preset rule configuration
-  -P --list-presets    List the available preset configurations
-  --reporter=REPORTER  Use REPORTER for output rather than one named in config.
-  -r --show-rule=RULE  Show detailed information about RULE
-  -R --list-rules      Print out information about all available rules
-  -V --verbose         Turn on debug level logging
-  -v --version         Show version information
+  --list-presets       List the available preset configurations.
+  --list-rules         Print out information about all available rules.
+  --show-rule=RULE     Show detailed information about RULE.
+
+General Options:
+
+  -c --config=PATH     Path to configuration file.
+  -h --help            Show this screen.
+  -p --preset=PRESET   Start with a base preset rule configuration.
+  -r --reporter=REPORTER  Use REPORTER for output rather than one in config.
+  -V --verbose         Turn on debug level logging.
+  -v --version         Show version information.
 """
 
 import glob
