@@ -201,3 +201,26 @@ def json_reporter(issue, _file_contents):
     return [
         json.dumps(obj)
     ]
+
+
+_SQLINT_FORMAT = '{file}:{line}:{column}:{severity} {message_formatted}'
+
+
+@reporter('sqlint')
+def sqlint_reporter(issue, _contents):
+    """
+    Format compatible with ``sqlint``, which is already integrated into Flycheck
+    and other editor linting frameworks.
+
+    Main difference is really just that there are only two severity
+    levels: ``ERROR`` and ``WARNING``.
+    """
+
+    error_level = set(Severity.HIGH, Severity.CRITICAL)
+
+    info = _issue_info(issue, file_contents)
+    info['severity'] = 'ERROR' if issue.severity in error_level else 'WARNING'
+
+    return [
+        _SQLINT_FORMAT.format(**info)
+    ]
