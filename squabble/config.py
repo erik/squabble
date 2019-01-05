@@ -35,6 +35,24 @@ PRESETS = {
                 'DisallowChangeColumnType': {},
             }
         }
+    },
+
+    'full': {
+        'description': ('Every rule that ships with squabble. The output will '
+                        'be noisy, but it\'s probably a good starting point to '
+                        'figure out which rules are useful.'),
+        'config': {
+            'rules': {
+                'AddColumnDisallowConstraints': {
+                    'disallowed': ['DEFAULT', 'NOT NULL', 'UNIQUE', 'FOREIGN']
+                },
+                'RequireConcurrentIndex': {},
+                'DisallowRenameEnumValue': {},
+                'DisallowChangeColumnType': {},
+                'DisallowFloatTypes': {},
+                'RequirePrimaryKey': {}
+            }
+        }
     }
 }
 
