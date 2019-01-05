@@ -143,56 +143,59 @@ Example Rule
 
 .. code-block:: python
 
-   import squabble.rule
-   from squabble.lint import Severity
-   from squabble.message import Message
-   from squabble.rules import BaseRule
+  import squabble.rule
+  from squabble.lint import Severity
+  from squabble.message import Message
+  from squabble.rules import BaseRule
 
-   class AllTablesMustBeLoud(BaseRule):
-       """
-       A custom rule which makes sure that all table names are
-       in CAPSLOCK NOTATION.
-       """
+  class AllTablesMustBeLoud(BaseRule):
+      """
+      A custom rule which makes sure that all table names are
+      in CAPSLOCK NOTATION.
+      """
 
-       class TableNotLoudEnough(Message):
-           """Add more details about the message here"""
-           CODE = 9876
-           TEMPLATE = 'table "{name}" not LOUD ENOUGH'
+      class TableNotLoudEnough(Message):
+          """Add more details about the message here"""
+          CODE = 9876
+          TEMPLATE = 'table "{name}" not LOUD ENOUGH'
 
-       def enable(self, root_ctx, config):
-           """
-           Called before the root AST node is traversed. Here's where
-           most callbacks should be registered for different AST
-           nodes.
+      def enable(self, root_ctx, config):
+          """
+          Called before the root AST node is traversed. Here's where
+          most callbacks should be registered for different AST
+          nodes.
 
-           Each linter is initialized once per file that it is being
-           run against. `config` will contain the merged base
-           configuration with the file-specific configuration options
-           for this linter.
-           """
+          Each linter is initialized once per file that it is being
+          run against. `config` will contain the merged base
+          configuration with the file-specific configuration options
+          for this linter.
+          """
 
-           # Register that any time we see a `CreateStmt`
-           # (`CREATE TABLE`), call self._check()
-           root_ctx.register('CreateStmt', self._check_create())
+          # Register that any time we see a `CreateStmt`
+          # (`CREATE TABLE`), call self._check()
+          root_ctx.register('CreateStmt', self._check_create())
 
-           # When we exit the root `ctx`, call `self._on_finish()`
-           root_ctx.register_exit(lambda ctx: self._on_finish(ctx))
+          # When we exit the root `ctx`, call `self._on_finish()`
+          root_ctx.register_exit(lambda ctx: self._on_finish(ctx))
 
-       # node_visitor will pass in `ctx, node` for you so there's no
-       # need to use a lambda
-       @squabble.rule.node_visitor
-       def _check(self, ctx, node):
-           """
-           Called when we enter a 'CreateStmt' node. Here we can
-           register more callbacks if we need to, or do some checking
-           based on the `node` which will be the AST representation of
-           a `CREATE TABLE`.
-           """
+      # node_visitor will pass in `ctx, node` for you so there's no
+      # need to use a lambda
+      @squabble.rule.node_visitor
+      def _check_create(self, ctx, node):
+          """
+          Called when we enter a 'CreateStmt' node. Here we can
+          register more callbacks if we need to, or do some checking
+          based on the `node` which will be the AST representation of
+          a `CREATE TABLE`.
+          """
 
-           table_name = node.relation.relname.value
-           if table_name != table_name.upper():
-               # Report an error if this table was not SCREAMING_CASE
-               ctx.report(
-                   self.TableNotLoudEnough(name=table_name),
-                   node=node.relation,
-                   severity=Severity.HIGH)
+          table_name = node.relation.relname.value
+          if table_name != table_name.upper():
+              # Report an error if this table was not SCREAMING_CASE
+              ctx.report(
+                  self.TableNotLoudEnough(name=table_name),
+                  node=node.relation,
+                  severity=Severity.HIGH)
+
+      def _on_finish(self, ctx):
+          pass
