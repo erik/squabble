@@ -135,15 +135,16 @@ def load_config(config_file, preset_name=None):
     )
 
 
-def apply_file_config(base, file_name):
+def apply_file_config(base, contents):
     """
-    Given a base configuration object and a file, return a new config that
-    applies any file-specific rule additions/deletions.
+    Given a base configuration object and the contents of a file,
+    return a new config that applies any file-specific rule
+    additions/deletions.
     """
     # Operate on a copy so we don't mutate the base config
     file_rules = copy.deepcopy(base.rules)
 
-    rules = _parse_file_rules(file_name)
+    rules = _extract_file_rules(contents)
 
     for rule, opts in rules['enable'].items():
         file_rules[rule] = opts
@@ -152,13 +153,6 @@ def apply_file_config(base, file_name):
         del file_rules[rule]
 
     return base._replace(rules=file_rules)
-
-
-def _parse_file_rules(file_name):
-    with open(file_name, 'r') as fp:
-        text = fp.read()
-
-    return _extract_file_rules(text)
 
 
 def _extract_file_rules(text):

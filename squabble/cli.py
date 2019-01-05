@@ -4,9 +4,9 @@ Usage:
   squabble (-h | --help)
 
 Arguments:
-  PATHS                Files or directories to lint. If given a directory, will
+  PATHS                Paths to check. If given a directory, will
                        recursively traverse the path and lint all files ending
-                       in `.sql`
+                       in `.sql` [default: -].
 
 Options:
   -c --config=PATH     Path to configuration file
@@ -81,37 +81,59 @@ def run_linter(base_config, paths):
     Run linter against all SQL files contained in ``paths``.
 
     ``paths`` may contain both files and directories.
+
+    If ``paths`` is empty or only contains ``"-"``, squabble will read
+    from stdin instead.
     """
+    if not paths:
+        paths = ['-']
+
     files = collect_files(paths)
 
     issues = []
-    for file_name in files:
-        file_config = config.apply_file_config(base_config, file_name)
-        issues += lint.check_file(file_config, file_name)
+    for file_name, contents in files:
+        file_config = config.apply_file_config(base_config, contents)
+        issues += lint.check_file(file_config, file_name, contents)
 
-    reporter.report(base_config.reporter, issues)
+    reporter.report(base_config.reporter, issues, dict(files))
 
     # Make sure we have an error status if something went wrong.
     return 1 if issues else 0
 
 
+def _slurp_file(file_name):
+    """Read entire contents of ``file_name`` as text."""
+    with open(file_name, 'r') as fp:
+        return fp.read()
+
+
 def collect_files(paths):
     """
-    Given a list of files or directories, return all named files as well as
+    Given a list of files or directories, find all named files as well as
     any files ending in `.sql` in the directories.
+
+    The return format is a list of tuples containing the file name and
+    file contents.
+
+    The value ``'-'`` is treated specially as stdin.
     """
     files = []
 
     for path in map(os.path.expanduser, paths):
-        if not os.path.exists(path):
+        if path == '-':
+            files.append(('stdin', sys.stdin.read()))
+
+        elif not os.path.exists(path):
             sys.exit('%s: no such file or directory' % path)
 
         elif os.path.isdir(path):
-            sql = os.path.join(path, '**/*.sql')
-            files.extend(glob.iglob(sql, recursive=True))
+            sql_glob = os.path.join(path, '**/*.sql')
+            sql_files = glob.iglob(sql_glob, recursive=True)
+
+            files.extend(collect_files(sql_files))
 
         else:
-            files.append(path)
+            files.append((path, _slurp_file(path)))
 
     return files
 

@@ -41,9 +41,9 @@ def test_snapshot(file_name):
         pytest.skip('no output configured')
 
     base_cfg = config.get_base_config()
-    cfg = config.apply_file_config(base_cfg, file_name)
+    cfg = config.apply_file_config(base_cfg, contents)
 
-    issues = lint.check_file(cfg, file_name)
+    issues = lint.check_file(cfg, file_name, contents)
 
     assert len(issues) == len(expected)
 

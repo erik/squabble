@@ -54,17 +54,13 @@ def _configure_rules(rule_config):
     return rules
 
 
-def check_file(config, file_name):
+def check_file(config, name, contents):
     """
     Return a list of lint issues from using ``config`` to lint
-    ``file_name``.
+    ``name``.
     """
-
-    with open(file_name, 'r') as fp:
-        text = fp.read()
-
     rules = _configure_rules(config.rules)
-    s = Session(rules, text, file_name)
+    s = Session(rules, contents, file_name=name)
     return s.lint()
 
 

@@ -48,7 +48,7 @@ def reporter(name):
     return wrapper
 
 
-def report(reporter_name, issues):
+def report(reporter_name, issues, files):
     """
     Call the named reporter function for every issue in the list of issues.
     """
@@ -56,14 +56,8 @@ def report(reporter_name, issues):
         raise UnknownReporterException(reporter_name)
 
     reporter = _REPORTERS[reporter_name]
-    files = {}
 
     for i in issues:
-        # Cache the file contents
-        if i.file is not None and i.file not in files:
-            with open(i.file, 'r') as fp:
-                files[i.file] = fp.read()
-
         file_contents = files.get(i.file, '')
         for line in reporter(i, file_contents):
             _print_err(line)

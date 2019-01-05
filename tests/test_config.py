@@ -39,9 +39,9 @@ def test_unknown_preset():
         config.get_base_config(preset_name='asdf')
 
 
-@patch('squabble.config._parse_file_rules')
-def test_apply_file_config(mock_parse):
-    mock_parse.return_value = {'enable': {'baz': {'a': 1}}, 'disable': ['bar']}
+@patch('squabble.config._extract_file_rules')
+def test_apply_file_config(mock_extract):
+    mock_extract.return_value = {'enable': {'baz': {'a': 1}}, 'disable': ['bar']}
 
     orig = config.Config(reporter='', plugins=[], rules={'foo': {}, 'bar': {}})
     base = copy.deepcopy(orig)
