@@ -2,6 +2,7 @@
    :maxdepth: 3
    :hidden:
 
+   editors
    rules
    plugins
    api/index

@@ -19,19 +19,6 @@ Catch unsafe SQL migrations.
        performance issues.
        ...
 
-Squabble works to help automate the process of reviewing SQL migrations
-by catching simple mistakes, such as:
-
--  Changing the type of an existing column
--  Adding a new column with a default value or ``NOT NULL`` constraint
--  Building an index without using ``CONCURRENTLY``
-
-For more information on why these particular cases can be dangerous:
-
--  https://www.braintreepayments.com/blog/safe-operations-for-high-volume-postgresql/
--  https://blog.codeship.com/rails-migrations-zero-downtime/
--  https://stripe.com/blog/online-migrations
-
 Currently, most of the rules have been focused on Postgres and its
 quirks. However, squabble can parse any ANSI SQL and new rules that are
 specific to other databases are appreciated!
