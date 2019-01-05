@@ -106,6 +106,22 @@ Example Configuration
      }
    }
 
+Prior Art
+---------
+
+``squabble`` is of course not the first tool in this space. If it
+doesn't fit your needs, consider one of these tools:
+
+- `sqlcheck <https://github.com/jarulraj/sqlcheck>`__ - regular
+  expression based (rather than parsing), focuses more on ``SELECT``
+  statements than migrations.
+- `sqlint <https://github.com/purcell/sqlint>`__ - checks that the
+  syntax of a file is valid. Uses the same parsing library as
+  squabble.
+- `sqlfluff <https://github.com/alanmcruickshank/sqlfluff>`__ -
+  focused more on style and formatting, seems to still be a work in
+  progress.
+
 
 Acknowledgments
 ---------------
