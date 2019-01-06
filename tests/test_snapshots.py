@@ -5,6 +5,7 @@ import json
 
 import pytest
 
+import squabble.cli
 from squabble import config, lint, reporter, rule
 
 SQL_FILES = glob.glob('tests/sql/*.sql')
@@ -75,3 +76,10 @@ def test_reporter_sanity(reporter_name):
         issues.extend(lint.check_file(cfg, file_name, contents))
 
     reporter.report(reporter_name, issues, files)
+
+
+def test_cli_linter():
+    """Dumb test to make sure things are wired correctly in CLI."""
+    base_cfg = config.get_base_config()
+    exit_status = squabble.cli.run_linter(base_cfg, SQL_FILES)
+    assert exit_status == 1
