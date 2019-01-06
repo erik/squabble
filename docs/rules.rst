@@ -5,7 +5,9 @@ Squabble ships with several rules that are focused mostly on
 preventing unsafe schema migrations. To enable these rules,
 reference them in your ``.squabblerc`` configuration file.
 
-For example: ::
+For example:
+
+.. code-block:: json
 
   {
     "rules": {

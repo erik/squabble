@@ -209,8 +209,8 @@ _SQLINT_FORMAT = '{file}:{line}:{column}:{severity} {message_formatted}'
 @reporter('sqlint')
 def sqlint_reporter(issue, file_contents):
     """
-    Format compatible with ``sqlint``, which is already integrated into Flycheck
-    and other editor linting frameworks.
+    Format compatible with ``sqlint``, which is already integrated into
+    Flycheck and other editor linting frameworks.
 
     Main difference is really just that there are only two severity
     levels: ``ERROR`` and ``WARNING``.

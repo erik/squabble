@@ -39,8 +39,8 @@ PRESETS = {
 
     'full': {
         'description': ('Every rule that ships with squabble. The output will '
-                        'be noisy, but it\'s probably a good starting point to '
-                        'figure out which rules are useful.'),
+                        'be noisy, but it\'s probably a good starting point '
+                        'to figure out which rules are useful.'),
         'config': {
             'rules': {
                 'AddColumnDisallowConstraints': {
@@ -97,8 +97,8 @@ def discover_config_location():
 
 def _get_vcs_root():
     """
-    Return the path to the root of the Git repository for the current directory,
-    or empty string if not in a repository.
+    Return the path to the root of the Git repository for the current
+    directory, or empty string if not in a repository.
     """
     return subprocess.getoutput(
         'git rev-parse --show-toplevel 2>/dev/null || echo ""')

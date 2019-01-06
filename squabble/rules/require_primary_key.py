@@ -8,7 +8,7 @@ from squabble.rules import BaseRule
 
 class RequirePrimaryKey(BaseRule):
     """
-    Require that all new tables specify a PRIMARY KEY constraint.
+    Require that all new tables specify a ``PRIMARY KEY`` constraint.
 
     Configuration: ::
 
@@ -22,6 +22,17 @@ class RequirePrimaryKey(BaseRule):
 
         If no single column will uniquely identify a row, creating a composite
         primary key is also possible.
+
+        .. code-block:: sql
+
+          CREATE TABLE users (email VARCHAR(128) PRIMARY KEY);
+
+          -- Also valid
+          CREATE TABLE users (
+            email VARCHAR(128),
+            -- ...
+            PRIMARY KEY(email)
+          );
         """
         CODE = 1002
         TEMPLATE = 'table "{tbl}" does not name a primary key'

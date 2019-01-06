@@ -8,12 +8,12 @@ from squabble.rules import BaseRule
 
 class RequireConcurrentIndex(BaseRule):
     """
-    Require all new indexes to be created with `CONCURRENTLY` so they won't
+    Require all new indexes to be created with ``CONCURRENTLY`` so they won't
     block.
 
     By default, tables created in the same index are exempted, since they are
     known to be empty. This can be changed with the option
-    `"include_new_tables": true`
+    ``"include_new_tables": true``.
 
     Configuration: ::
 
@@ -33,6 +33,10 @@ class RequireConcurrentIndex(BaseRule):
 
         .. code-block:: sql
 
+           -- Don't do this
+           CREATE INDEX users_by_name ON users(name);
+
+           -- Try this instead
            CREATE INDEX CONCURRENTLY users_by_name ON users(name);
         """
         CODE = 1001

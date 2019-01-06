@@ -121,6 +121,10 @@ This project would not be possible without:
    libpg_query
 -  Postgres - …obviously
 
+The `logo image <https://thenounproject.com/term/argue/148100/>`__ used
+in the documentation is created by Gianni - Dolce Merda from the Noun
+Project.
+
 .. |build-status| image:: https://img.shields.io/travis/erik/squabble.svg?style=flat
     :alt: build status
     :target: https://travis-ci.org/erik/squabble
