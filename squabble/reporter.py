@@ -22,7 +22,7 @@ class UnknownReporterException(squabble.SquabbleException):
 def reporter(name):
     """
     Decorator to register function as a callback when the config sets the
-    `"reporter"` config value to `name`.
+    ``"reporter"`` config value to ``name``.
 
     The wrapped function will be called with each
     :class:`squabble.lint.LintIssue` and the contents of the file
@@ -50,7 +50,26 @@ def reporter(name):
 
 def report(reporter_name, issues, files):
     """
-    Call the named reporter function for every issue in the list of issues.
+    Call the named reporter function for every issue in the list of
+    issues. All lines of output returned will be printed to stderr.
+
+    :param reporter_name: Issue reporter format to use.
+    :type reporter_name: str
+    :param issues: List of generated :class:`squabble.lint.LintIssue`.
+    :type issues: list
+    :param files: Map of file name to contents of file.
+    :type files: dict
+
+    >>> import sys; sys.stderr = sys.stdout  # for doctest.
+    >>> from squabble.lint import LintIssue
+    >>> @reporter('message_and_severity')
+    ... def message_and_severity_reporter(issue, contents):
+    ...     return ['%s:%s' % (issue.severity.name, issue.message_text)]
+    ...
+    >>> issue = LintIssue(severity=Severity.CRITICAL,
+    ...                   message_text='bad things!')
+    >>> report('message_and_severity', [issue], files={})
+    CRITICAL:bad things!
     """
     if reporter_name not in _REPORTERS:
         raise UnknownReporterException(reporter_name)
@@ -186,12 +205,14 @@ def color_reporter(issue, file_contents):
 def json_reporter(issue, _file_contents):
     """Dump each issue as a JSON dictionary"""
 
-    # pglast nodes aren't JSON serializable
+    # Swap out all of the non-JSON serializable elements:
+    issue = issue._replace(severity=issue.severity.name)
+
     if issue.node:
         issue = issue._replace(node=issue.node.parse_tree)
 
     if issue.message:
-        issue = issue.replace(message=issue.message.asdict())
+        issue = issue._replace(message=issue.message.asdict())
 
     obj = {
         k: v for k, v in issue._asdict().items()

@@ -53,3 +53,25 @@ def test_snapshot(file_name):
         for k, v in e.items():
             assert k in info
             assert info[k] == v
+
+
+@pytest.mark.parametrize('reporter_name', reporter._REPORTERS.keys())
+def test_reporter_sanity(reporter_name):
+    """
+    Make sure all the reporters can at least format all of the
+    issues generated without errors.
+    """
+    base_cfg = config.get_base_config()
+
+    issues = []
+    files = {}
+
+    for file_name in SQL_FILES:
+        with open(file_name, 'r') as fp:
+            contents = fp.read()
+            files[file_name] = contents
+
+        cfg = config.apply_file_config(base_cfg, contents)
+        issues.extend(lint.check_file(cfg, file_name, contents))
+
+    reporter.report(reporter_name, issues, files)
