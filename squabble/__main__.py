@@ -1,3 +1,4 @@
+import logging
 import sys
 
 import colorama
@@ -6,6 +7,7 @@ from squabble import cli
 
 
 def main():
+    logging.basicConfig()
     colorama.init()
     status = cli.main()
 

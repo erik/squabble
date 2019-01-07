@@ -1,9 +1,13 @@
+import logging
+
 import pglast
 
 import squabble.rule
-from squabble import logger
 from squabble.message import Message
 from squabble.rules import BaseRule
+
+
+logger = logging.getLogger(__name__)
 
 
 class RequireConcurrentIndex(BaseRule):

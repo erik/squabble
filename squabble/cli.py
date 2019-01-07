@@ -24,6 +24,7 @@ Options:
 
 import glob
 import json
+import logging
 import os.path
 import sys
 
@@ -33,7 +34,7 @@ from pkg_resources import get_distribution
 
 import squabble
 import squabble.message
-from squabble import config, lint, logger, reporter, rule
+from squabble import config, lint, reporter, rule
 
 
 def main():
@@ -51,7 +52,7 @@ def dispatch_args(args):
     Note that some exceptional conditions will terminate the program directly.
     """
     if args['--verbose']:
-        logger.setLevel('DEBUG')
+        squabble.logger.setLevel('DEBUG')
 
     if args['--list-presets']:
         return list_presets()

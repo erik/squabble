@@ -2,9 +2,13 @@ import functools
 import glob
 import importlib
 import importlib.util as import_util
+import logging
 import os.path
 
-from squabble import UnknownRuleException, logger
+from squabble import UnknownRuleException
+
+
+logger = logging.getLogger(__name__)
 
 
 def _load_plugin(path):

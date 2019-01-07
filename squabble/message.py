@@ -1,4 +1,9 @@
-from squabble import SquabbleException, logger
+import logging
+
+from squabble import SquabbleException
+
+
+logger = logging.getLogger(__name__)
 
 
 class DuplicateMessageCodeException(SquabbleException):

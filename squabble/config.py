@@ -1,11 +1,16 @@
 import collections
 import copy
 import json
+import logging
 import os.path
 import re
 import subprocess
 
-from squabble import SquabbleException, logger
+from squabble import SquabbleException
+
+
+logger = logging.getLogger(__name__)
+
 
 Config = collections.namedtuple('Config', [
     'reporter',
@@ -74,8 +79,6 @@ def discover_config_location():
     - in the root of the repository (if working in a git repo).
     - in the user's home directory.
     """
-    logger.debug('No config file given, trying to discover')
-
     possible_dirs = [
         '.',
         _get_vcs_root(),
@@ -86,12 +89,14 @@ def discover_config_location():
         if d is None:
             continue
 
-        logger.debug('Checking %s for a config file', d)
+        logger.debug('checking %s for a config file', d)
 
         file_name = os.path.join(d, '.squabblerc')
         if os.path.exists(file_name):
+            logger.debug('using "%s" for configuration', file_name)
             return file_name
 
+    logger.debug('no config file found')
     return None
 
 
