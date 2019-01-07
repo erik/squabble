@@ -104,23 +104,38 @@ def _issue_to_file_location(issue, contents):
     :type issue: :class:`squabble.lint.LintIssue`
     :param contents: Full contents of the file being linted, as a string.
     :type contents: str
+
+    >>> from squabble.lint import LintIssue
+
+    >>> issue = LintIssue(location=8, file='foo')
+    >>> sql = '1234\\n678\\nABCD'
+    >>> _issue_to_file_location(issue, sql)
+    ('678', 2, 3)
+
+    >>> issue = LintIssue(location=7, file='foo')
+    >>> sql = '1\\r\\n\\r\\n678\\r\\nBCD'
+    >>> _issue_to_file_location(issue, sql)
+    ('678', 3, 2)
     """
     loc = _location_for_issue(issue)
 
-    if loc is None:
+    if loc is None or loc >= len(contents):
         return ('', 1, 0)
 
-    lines = contents.splitlines()
+    # line number is number of newlines in the file before this
+    # location, 1 indexed.
+    line_num = contents[:loc].count('\n') + 1
 
-    for i, line in enumerate(lines, start=1):
-        if loc <= len(line):
-            return (line, i, loc)
+    # Search forwards/backwards for the first newline before and first
+    # newline after this point.
+    line_start = contents.rfind('\n', 0, loc) + 1
+    line_end = contents.find('\n', loc)
 
-        # Add 1 to count the newline char.
-        # TODO: won't work with \r\n
-        loc -= len(line) + 1
+    # Strip out \r so we can treat \r\n and \n the same way
+    line = contents[line_start:line_end].replace('\r', '')
+    column = loc - line_start
 
-    return ('', 1, 0)
+    return(line, line_num, column)
 
 
 def _print_err(msg):
