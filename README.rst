@@ -19,6 +19,15 @@ Catch unsafe SQL migrations.
        performance issues.
        ...
 
+Squabble can also be `integrated with your editor
+<https://squabble.rtfd.io/en/latest/editors.html>`__ to catch errors in
+SQL files.
+
+.. code:: console
+
+  $ echo 'SELECT * FROM WHERE x = y;' | squabble --reporter=plain
+  stdin:1:15 CRITICAL: syntax error at or near "WHERE"
+
 Currently, most of the rules have been focused on Postgres and its
 quirks. However, squabble can parse any ANSI SQL and new rules that are
 specific to other databases are appreciated!
