@@ -28,8 +28,23 @@ DEFAULT_CONFIG = dict(
 
 PRESETS = {
     'postgres': {
-        'description': ('A sane set of defaults that checks for obviously '
-                        'dangerous Postgres migrations.'),
+        'description': (
+            'A sane set of defaults that checks for obviously '
+            'dangerous Postgres migrations.'
+        ),
+        'config': {
+            'rules': {
+                'DisallowRenameEnumValue': {},
+                'DisallowChangeColumnType': {},
+            }
+        }
+    },
+
+    'postgres-zero-downtime': {
+        'description': (
+            'A set of rules focused on preventing downtime during schema '
+            'migrations on busy Postgres databases.'
+        ),
         'config': {
             'rules': {
                 'AddColumnDisallowConstraints': {
