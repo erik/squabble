@@ -9,10 +9,23 @@ from squabble.rules import BaseRule
 
 class RequireForeignKey(BaseRule):
     """
-    New columns that look like references have a foreign key constraint.
+    New columns that look like references must have a foreign key constraint.
 
-    By default, "look like" means that the name of the column matches
+    By default, "looks like" means that the name of the column matches
     the regex ``.*_id$``, but this is configurable.
+
+    .. code-block:: sql
+
+      CREATE TABLE comments (
+        post_id  INT,  -- warning here, this looks like a foreign key,
+                       -- but no constraint was given
+
+        -- No warning here
+        user_id INT REFERENCES users(id)
+      )
+
+      ALTER TABLE books
+        ADD COLUMN author_id INT;  -- warning here
 
     Configuration ::
 
@@ -37,7 +50,6 @@ class RequireForeignKey(BaseRule):
 
         .. code-block:: sql
 
-          -- Each of these forms is acceptable:
           CREATE TABLE admins (user_id INTEGER REFERENCES users(id));
 
           CREATE TABLE admins (
@@ -55,7 +67,7 @@ class RequireForeignKey(BaseRule):
     _DEFAULT_REGEX = '.*_id$'
 
     def enable(self, root_ctx, config):
-        column_re = re.compile(config.get('column_regex', self._DEFAULT_REGEX))
+        fk_regex = re.compile(config.get('column_regex', self._DEFAULT_REGEX))
 
         # Keep track of column_name -> column_def node so we can
         # report a sane location for the warning when a new column
@@ -66,15 +78,18 @@ class RequireForeignKey(BaseRule):
         # as well as ALTER TABLE ... ADD COLUMN
         root_ctx.register(
             'CreateStmt',
-            lambda _, node: _create_table_stmt(node, column_re, missing_fk))
+            lambda _, node: _create_table_stmt(node, fk_regex, missing_fk))
 
         root_ctx.register(
             'AlterTableStmt',
-            lambda _, node: _alter_table_stmt(node, column_re, missing_fk))
+            lambda _, node: _alter_table_stmt(node, fk_regex, missing_fk))
 
         def _report_missing(ctx):
-            nonlocal missing_fk
-
+            """
+            When we exit the root context, any elements remaining in
+            ``missing_fk`` are known not to have a FOREIGN KEY
+            constraint, so report them as errors.
+            """
             for column, node in missing_fk.items():
                 ctx.report(
                     self.MissingForeignKeyConstraint(col=column),
@@ -83,38 +98,37 @@ class RequireForeignKey(BaseRule):
         root_ctx.register_exit(_report_missing)
 
 
-def _create_table_stmt(table_node, column_re, missing_fk):
+def _create_table_stmt(table_node, fk_regex, missing_fk):
     table_name = table_node.relation.relname.value
 
     for e in table_node.tableElts:
         # Defining a column, may include an inline constraint.
         if e.node_tag == 'ColumnDef':
-            if _column_needs_foreign_key(column_re, e):
+            if _column_needs_foreign_key(fk_regex, e):
                 key = '{}.{}'.format(table_name, e.colname.value)
                 missing_fk[key] = e
 
         # FOREIGN KEY (...) REFERENCES ...
         elif e.node_tag == 'Constraint':
-            _remove_satisfied_foreign_keys(table_name, e, missing_fk)
+            _remove_satisfied_foreign_keys(e, table_name, missing_fk)
 
 
-def _alter_table_stmt(node, column_re, missing_fk):
+def _alter_table_stmt(node, fk_regex, missing_fk):
     table_name = node.relation.relname.value
 
     for cmd in node.cmds:
         if cmd.subtype == AlterTableType.AT_AddColumn:
-            col_name = cmd['def'].colname.value
-            if _column_needs_foreign_key(column_re, cmd['def']):
-                key = '{}.{}'.format(table_name, col_name)
+            if _column_needs_foreign_key(fk_regex, cmd['def']):
+                key = '{}.{}'.format(table_name, cmd['def'].colname.value)
                 missing_fk[key] = cmd['def']
 
         elif cmd.subtype in (AlterTableType.AT_AddConstraint,
                              AlterTableType.AT_AddConstraintRecurse):
             constraint = cmd['def']
-            _remove_satisfied_foreign_keys(table_name, constraint, missing_fk)
+            _remove_satisfied_foreign_keys(constraint, table_name, missing_fk)
 
 
-def _remove_satisfied_foreign_keys(table_name, constraint, missing_fk):
+def _remove_satisfied_foreign_keys(constraint, table_name, missing_fk):
     # Nothing to do if this isn't a foreign key constraint
     if constraint.contype != ConstrType.CONSTR_FOREIGN:
         return
@@ -126,9 +140,38 @@ def _remove_satisfied_foreign_keys(table_name, constraint, missing_fk):
         missing_fk.pop(key, '')
 
 
-def _column_needs_foreign_key(column_re, column_def):
+def _column_needs_foreign_key(fk_regex, column_def):
+    """
+    Return True if the ``ColumnDef`` defines a column with a name that
+    matches the foreign key regex but does not specify an inline
+    constraint.
+
+    >>> import re
+    >>> import pglast
+
+    >>> fk_regex = re.compile('.*_id$')
+    >>> cols = {
+    ...     # name doesn't match regex
+    ...     'email': {'ColumnDef': {'colname': 'email'}},
+    ...
+    ...     # name matches regex, but no foreign key
+    ...     'users_id': {'ColumnDef': {'colname': 'users_id'}},
+    ...
+    ...     # name matches regex, but has foreign key (contype == 8)
+    ...     'post_id': {'ColumnDef': {
+    ...         'colname': 'post_id',
+    ...         'constraints': [{'Constraint': {'contype': 8}}]
+    ...      }}
+    ... }
+    >>> _column_needs_foreign_key(fk_regex, pglast.Node(cols['email']))
+    False
+    >>> _column_needs_foreign_key(fk_regex, pglast.Node(cols['users_id']))
+    True
+    >>> _column_needs_foreign_key(fk_regex, pglast.Node(cols['post_id']))
+    False
+    """
     name = column_def.colname.value
-    if not column_re.match(name):
+    if not fk_regex.match(name):
         return False
 
     if column_def.constraints == pglast.Missing:

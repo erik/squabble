@@ -63,6 +63,13 @@ RequireConcurrentIndex
    :show-inheritance:
    :exclude-members: enable
 
+RequireForeignKey
+-----------------
+.. autoclass:: squabble.rules.require_foreign_key.RequireForeignKey
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
 RequirePrimaryKey
 -----------------
 .. autoclass:: squabble.rules.require_primary_key.RequirePrimaryKey
