@@ -35,7 +35,7 @@ specific to other databases are appreciated!
 Installation
 ------------
 
-.. code:: console
+.. code-block:: console
 
    $ pip3 install squabble
    $ squabble --help
@@ -46,7 +46,7 @@ Installation
 
 If you’d like to install from source:
 
-.. code:: console
+.. code-block:: console
 
    $ git clone https://github.com/erik/squabble.git && cd squabble
    $ python3 -m venv ve && source ve/bin/activate
@@ -58,21 +58,21 @@ Configuration
 
 To see a list of rules, try
 
-.. code:: console
+.. code-block:: console
 
    $ squabble --list-rules
 
 Then, to show more verbose information about a rule (such as rationale
 and configuration options)
 
-.. code:: console
+.. code-block:: console
 
    $ squabble --show-rule AddColumnsDisallowConstraints
 
 Once a configuration file is in place, it can be passed explicitly on
 the command line, or automatically looked up.
 
-.. code:: console
+.. code-block:: console
 
    $ squabble -c path/to/config ...
 
@@ -83,10 +83,26 @@ file named ``.squabblerc`` in the following places (in order):
 -  ``(git_repo_root)/.squabblerc``
 -  ``~/.squabblerc``
 
+Per-File Configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+Configuration can also be applied at the file level by using SQL line comments
+in the form ``-- enable:RuleName`` or ``-- disable:RuleName``.
+
+For example, to disable ``RuleA`` and enable ``RuleB`` just for one file,
+this could be done:
+
+.. code-block:: sql
+
+   -- disable:A
+   -- enable:B config=value array=1,2,3
+   SELECT email FROM users WHERE ...;
+
+
 Example Configuration
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. code:: json
+.. code-block:: json
 
    {
      "reporter": "color",
