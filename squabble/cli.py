@@ -192,13 +192,13 @@ def explain_message(code):
             code=code
         ))
 
-    print('{bold}{name}{reset}'.format(
+    print('{bold}{name}{reset}\n'.format(
         bold=Style.BRIGHT,
         reset=Style.RESET_ALL,
         name=cls.__name__
     ))
 
-    print('\t', cls.explain() or 'No additional info.', sep='')
+    print(cls.explain() or 'No additional info.', sep='')
 
 
 def list_presets():

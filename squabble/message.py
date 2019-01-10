@@ -1,4 +1,6 @@
+import inspect
 import logging
+import re
 
 from squabble import SquabbleException
 
@@ -117,18 +119,36 @@ class Message:
         The purpose of this function is to explain to users _why_ the
         message was raised, and what they can do to resolve the issue.
 
-        The base implementation will simply return the docstring for
-        the class, but this can be overridden if more specialized
-        behavior is necessary.
+        The base implementation will simply return the docstring (with
+        some common RST-isms stripped out) for the class, but this can
+        be overridden if more specialized behavior is necessary.
 
         >>> class NoDocString(Message): pass
         >>> NoDocString().explain() is None
         True
+
+        >>> class RstMessage(Message):
+        ...    '''
+        ...    Don't do this:
+        ...    .. code-block:: sql
+        ...      SELECT * FROM big_table;
+        ...    '''
+        >>> RstMessage().explain()
+        "Don't do this:\\n\\n  SELECT * FROM big_table;"
         """
         if not cls.__doc__:
             return None
 
-        return cls.__doc__.strip()
+        # Remove the leading indentation on the docstring
+        doc = inspect.cleandoc(cls.__doc__)
+
+        # replace ``.. code-block:: lang``
+        return re.sub(
+            r'^\s*\.\. code(-block)?:: (\w+)$',
+            '',
+            doc,
+            flags=re.MULTILINE
+        )
 
     def asdict(self):
         return {
