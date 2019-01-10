@@ -1,3 +1,5 @@
+import inspect
+
 from squabble.rule import Registry
 
 
@@ -49,7 +51,7 @@ class BaseRule:
         >>> m['help']
         'More details about this rule.'
         """
-        split_doc = (cls.__doc__ or '').strip().split('\n', 1)
+        split_doc = inspect.cleandoc(cls.__doc__ or '').split('\n\n', 1)
 
         help = None
         if len(split_doc) == 2:

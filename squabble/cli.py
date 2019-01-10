@@ -158,7 +158,7 @@ def show_rule(name):
             **color
         }))
 
-    print('{bold}{name}{reset} - {description}\n{help}'.format(**{
+    print('{bold}{name}{reset} - {description}\n\n{help}'.format(**{
         **meta,
         **color
     }))
