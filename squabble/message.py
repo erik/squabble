@@ -137,9 +137,9 @@ class Message:
         Return dictionary representation of message, for formatting.
 
         >>> class SummaryMessage(Message):
-        ...     '''A useful message.'''
         ...     CODE = 90291
         ...     TEMPLATE = 'everything is {status}'
+        ...
         >>> msg = SummaryMessage(status='wrong')
         >>> msg.asdict() == {
         ...   'message_id': 'SummaryMessage',
