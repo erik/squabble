@@ -2,7 +2,7 @@ import os.path
 
 from setuptools import setup, find_packages
 
-__version__ = '1.1.0rc1'
+__version__ = '1.1.0'
 
 
 readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
@@ -30,8 +30,9 @@ setup(
         'colorama==0.4.1'
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: SQL'
+        'Programming Language :: SQL',
+        'Topic :: Utilities',
     ]
 )
