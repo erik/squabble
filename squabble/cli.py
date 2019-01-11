@@ -34,6 +34,7 @@ from pkg_resources import get_distribution
 import squabble
 import squabble.message
 from squabble import config, lint, reporter, rule
+from squabble.util import strip_rst_directives
 
 
 def main():
@@ -174,9 +175,12 @@ def list_rules():
     all_rules = sorted(rule.Registry.all(), key=lambda r: r['name'])
 
     for meta in all_rules:
+        desc = strip_rst_directives(meta['description'])
+
         print('{bold}{name: <32}{reset} {description}'.format(**{
             **color,
-            **meta
+            **meta,
+            'desc': desc,
         }))
 
 
@@ -198,7 +202,8 @@ def explain_message(code):
         name=cls.__name__
     ))
 
-    print(cls.explain() or 'No additional info.', sep='')
+    explanation = cls.explain() or 'No additional info.'
+    print(strip_rst_directives(explanation))
 
 
 def list_presets():

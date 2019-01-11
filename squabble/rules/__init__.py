@@ -1,7 +1,6 @@
 import inspect
 
 from squabble.rule import Registry
-from squabble.util import strip_rst_directives
 
 
 class BaseRule:
@@ -56,7 +55,7 @@ class BaseRule:
 
         help = None
         if len(split_doc) == 2:
-            help = strip_rst_directives(split_doc[1])
+            help = split_doc[1]
 
         return {
             'name': cls.__name__,
