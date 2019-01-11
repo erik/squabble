@@ -1,8 +1,8 @@
 import inspect
 import logging
-import re
 
 from squabble import SquabbleException
+from squabble.util import strip_rst_directives
 
 
 logger = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ class Message:
         ...      SELECT * FROM big_table;
         ...    '''
         >>> RstMessage().explain()
-        "Don't do this:\\n\\n  SELECT * FROM big_table;"
+        "Don't do this:\\n  SELECT * FROM big_table;"
         """
         if not cls.__doc__:
             return None
@@ -143,12 +143,7 @@ class Message:
         doc = inspect.cleandoc(cls.__doc__)
 
         # replace ``.. code-block:: lang``
-        return re.sub(
-            r'^\s*\.\. code(-block)?:: (\w+)$',
-            '',
-            doc,
-            flags=re.MULTILINE
-        )
+        return strip_rst_directives(doc)
 
     def asdict(self):
         return {

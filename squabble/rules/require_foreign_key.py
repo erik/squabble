@@ -15,7 +15,6 @@ class RequireForeignKey(BaseRule):
     the regex ``.*_id$``, but this is configurable.
 
     .. code-block:: sql
-
       CREATE TABLE comments (
         post_id  INT,  -- warning here, this looks like a foreign key,
                        -- but no constraint was given

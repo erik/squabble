@@ -15,3 +15,4 @@ squabble package
    squabble.reporter
    squabble.rule
    squabble.rules
+   squabble.util
