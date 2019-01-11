@@ -133,6 +133,23 @@ class Message:
         return inspect.cleandoc(cls.__doc__)
 
     def asdict(self):
+        """
+        Return dictionary representation of message, for formatting.
+
+        >>> class SummaryMessage(Message):
+        ...     '''A useful message.'''
+        ...     CODE = 90291
+        ...     TEMPLATE = 'everything is {status}'
+        >>> msg = SummaryMessage(status='wrong')
+        >>> msg.asdict() == {
+        ...   'message_id': 'SummaryMessage',
+        ...   'message_text': 'everything is wrong',
+        ...   'message_template': SummaryMessage.TEMPLATE,
+        ...   'message_params': {'status': 'wrong'},
+        ...   'message_code': 90291
+        ... }
+        True
+        """
         return {
             'message_id': self.__class__.__name__,
             'message_text': self.format(),
