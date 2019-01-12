@@ -35,8 +35,15 @@ DisallowChangeColumnType
    :show-inheritance:
    :exclude-members: enable
 
+DisallowForeignKey
+------------------
+.. autoclass:: squabble.rules.disallow_foreign_key.DisallowForeignKey
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
 DisallowFloatTypes
-------------------------
+------------------
 .. autoclass:: squabble.rules.disallow_float_types.DisallowFloatTypes
    :members:
    :show-inheritance:

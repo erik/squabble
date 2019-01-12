@@ -1,6 +1,20 @@
 Changelog
 =========
 
+latest (unreleased)
+-------------------
+
+New
+~~~
+
+- Added ``DisallowForeignKey`` rule.
+
+Changes
+~~~~~~~
+
+Fixes
+~~~~~
+
 v1.1.0 (2019-01-11)
 -------------------
 
