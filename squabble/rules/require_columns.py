@@ -34,7 +34,7 @@ def _normalize_columns(table_elts):
 
     >>> import pglast.printer
     >>> create_table = pglast.parse_sql(
-    ...   'CREATE TABLE _(col1 foo.bar(baz,123), col2 integer);')
+    ...   'CREATE TABLE _(COL1 foo.bar(baz,123), Col2 integer);')
     >>> table_elts = pglast.Node(create_table)[0].stmt.tableElts
     >>> _normalize_columns(table_elts)
     [('col1', 'foo.bar(baz, 123)'), ('col2', 'integer')]
@@ -79,7 +79,7 @@ def get_required_columns(config):
     Extracts the column name and normalizes types out of the config
     value for `RequireColumns`.
 
-    >>> get_required_columns(['foo,int', 'bar'])
+    >>> get_required_columns(['foo,int', 'Bar'])
     {'foo': 'integer', 'bar': None}
     """
     if not config:
@@ -100,9 +100,7 @@ class RequireColumns(BaseRule):
     """
     Require that newly created tables have specified columns.
 
-    Configuration:
-
-    ::
+    Configuration ::
 
         {
             "RequireColumns": {
@@ -127,6 +125,7 @@ class RequireColumns(BaseRule):
     def enable(self, ctx, config):
         config = config.get('required', [])
         cols = get_required_columns(config)
+
         ctx.register('CreateStmt', self._check_create_table(cols))
 
     @squabble.rule.node_visitor
@@ -138,7 +137,7 @@ class RequireColumns(BaseRule):
             columns[col] = {'type': typ, 'node': None}
 
         def _attach_column_node(_ctx, col):
-            name = col.colname.value
+            name = col.colname.value.lower()
             columns[name]['node'] = col
 
         ctx.register('ColumnDef', _attach_column_node)

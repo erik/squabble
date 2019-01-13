@@ -15,6 +15,8 @@ Changes
 Fixes
 ~~~~~
 
+- Fix ``RequireColumns`` to work with irregular casing.
+
 v1.1.0 (2019-01-11)
 -------------------
 

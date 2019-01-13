@@ -60,8 +60,11 @@ class DisallowForeignKey(BaseRule):
     @squabble.rule.node_visitor
     def _check_for_foreign_key(self, ctx, node, allowed_tables):
         """
-        Coincidentally, both AlterTableStmt and CreateStmt have a similar
-        enough structure that we can use the same function for both.
+        Make sure ``node`` doesn't have a FOREIGN KEY reference.
+
+        Coincidentally, both ``AlterTableStmt`` and ``CreateStmt``
+        have a similar enough structure that we can use the same
+        function for both.
         """
         table_name = node.relation.relname.value.lower()
 
@@ -70,12 +73,10 @@ class DisallowForeignKey(BaseRule):
             return
 
         def _check_constraint(child_ctx, constraint):
-            if constraint.contype != ConstrType.CONSTR_FOREIGN:
-                return
-
-            child_ctx.report(
-                self.DisallowedForeignKeyConstraint(table=table_name),
-                node=constraint
-            )
+            if constraint.contype == ConstrType.CONSTR_FOREIGN:
+                child_ctx.report(
+                    self.DisallowedForeignKeyConstraint(table=table_name),
+                    node=constraint
+                )
 
         ctx.register('Constraint', _check_constraint)
