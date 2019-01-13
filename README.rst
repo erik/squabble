@@ -94,8 +94,8 @@ this could be done:
 
 .. code-block:: sql
 
-   -- disable:A
-   -- enable:B config=value array=1,2,3
+   -- disable:RuleA
+   -- enable:RuleB config=value array=1,2,3
    SELECT email FROM users WHERE ...;
 
 
