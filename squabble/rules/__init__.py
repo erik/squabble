@@ -39,7 +39,8 @@ class BaseRule:
 
         >>> class MyRule(BaseRule):
         ...     '''
-        ...     Brief description of rule.
+        ...     Brief description of rule. This can
+        ...     wrap to the next line.
         ...
         ...     More details about this rule.
         ...     '''
@@ -47,7 +48,7 @@ class BaseRule:
         >>> m['name']
         'MyRule'
         >>> m['description']
-        'Brief description of rule.'
+        'Brief description of rule. This can wrap to the next line.'
         >>> m['help']
         'More details about this rule.'
         """
@@ -57,9 +58,11 @@ class BaseRule:
         if len(split_doc) == 2:
             help = split_doc[1]
 
+        description = split_doc[0].replace('\n', ' ')
+
         return {
             'name': cls.__name__,
-            'description': split_doc[0],
+            'description': description,
             'help': help
         }
 
