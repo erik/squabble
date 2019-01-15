@@ -59,8 +59,8 @@ PRESETS = {
 
     'full': {
         'description': ('Every rule that ships with squabble. The output will '
-                        'be noisy, but it\'s probably a good starting point '
-                        'to figure out which rules are useful.'),
+                        'be noisy (and nonsensical), but it\'s probably a good '
+                        'starting point to figure out which rules are useful.'),
         'config': {
             'rules': {
                 'AddColumnDisallowConstraints': {
@@ -70,7 +70,10 @@ PRESETS = {
                 'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
                 'DisallowFloatTypes': {},
-                'RequirePrimaryKey': {}
+                'RequirePrimaryKey': {},
+                # Yes, these are incompatible.
+                'DisallowForeignKey': {},
+                'RequireForeignKey': {},
             }
         }
     }
