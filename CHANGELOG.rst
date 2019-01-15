@@ -1,7 +1,7 @@
 Changelog
 =========
 
-latest (unreleased)
+v1.2.0 (2019-01-14)
 -------------------
 
 New
@@ -11,6 +11,9 @@ New
 
 Changes
 ~~~~~~~
+
+- Allow rule descriptions to span multiple lines.
+- Add ``DisallowForeignKey``, ``RequireForeignKey`` to ``"full"`` preset.
 
 Fixes
 ~~~~~
