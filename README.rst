@@ -154,9 +154,9 @@ Project.
     :alt: build status
     :target: https://travis-ci.org/erik/squabble
 
-.. |docs| image:: https://readthedocs.org/projects/squabble/badge/?version=latest
+.. |docs| image:: https://readthedocs.org/projects/squabble/badge/?version=stable
     :alt: Documentation Status
-    :target: https://squabble.readthedocs.io/en/latest/?badge=latest
+    :target: https://squabble.readthedocs.io/en/stable/?badge=stable
 
 .. |pypi| image:: https://img.shields.io/pypi/v/squabble.svg
    :alt: PyPI version
