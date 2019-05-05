@@ -1,6 +1,20 @@
 Changelog
 =========
 
+v1.3.0 (unreleased)
+------------------
+
+New
+~~~
+
+- Added `-x, --expanded` to show explanations of message codes after linting.
+
+Changes
+~~~~~~~
+
+Fixes
+~~~~~
+
 v1.2.0 (2019-01-14)
 -------------------
 

@@ -12,6 +12,8 @@ Options:
   -V --verbose            Turn on debug level logging.
   -v --version            Show version information.
 
+  -x --expanded           Show explantions for every raised message.
+
   -e --explain=CODE       Show detailed explanation of a message code.
   --list-presets          List available preset configurations.
   --list-rules            List available rules.
@@ -79,10 +81,10 @@ def dispatch_args(args):
     if args['--explain']:
         return explain_message(code=args['--explain'])
 
-    return run_linter(base_config, args['PATHS'])
+    return run_linter(base_config, args['PATHS'], args['--expanded'])
 
 
-def run_linter(base_config, paths):
+def run_linter(base_config, paths, expanded):
     """
     Run linter against all SQL files contained in ``paths``.
 
@@ -90,6 +92,9 @@ def run_linter(base_config, paths):
 
     If ``paths`` is empty or only contains ``"-"``, squabble will read
     from stdin instead.
+
+    If ``expanded`` is ``True``, print the detailed explanation of each message
+    after the lint has finished.
     """
     if not paths:
         paths = ['-']
@@ -102,6 +107,16 @@ def run_linter(base_config, paths):
         issues += lint.check_file(file_config, file_name, contents)
 
     reporter.report(base_config.reporter, issues, dict(files))
+
+    if expanded:
+        codes = {
+            i.message.CODE for i in issues
+            if i.message
+        }
+
+        for c in codes:
+            print('\n')
+            explain_message(c)
 
     # Make sure we have an error status if something went wrong.
     return 1 if issues else 0
@@ -196,9 +211,10 @@ def explain_message(code):
             code=code
         ))
 
-    print('{bold}{name}{reset}\n'.format(
+    print('{bold}{name}{reset} [{code}]\n'.format(
         bold=Style.BRIGHT,
         reset=Style.RESET_ALL,
+        code=cls.CODE,
         name=cls.__name__
     ))
 
