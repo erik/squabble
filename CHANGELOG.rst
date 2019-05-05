@@ -8,12 +8,17 @@ New
 ~~~
 
 - Added `-x, --expanded` to show explanations of message codes after linting.
+- Added `DisallowNotIn` rule
+- Added `DisallowPaddedCharType` rule
+- Added `DisallowTimetzType` rule
 
 Changes
 ~~~~~~~
 
 Fixes
 ~~~~~
+
+- Small documentation fixes for rules.
 
 v1.2.0 (2019-01-14)
 -------------------
