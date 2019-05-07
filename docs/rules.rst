@@ -70,6 +70,13 @@ DisallowRenameEnumValue
    :show-inheritance:
    :exclude-members: enable
 
+DisallowTimetzType
+------------------
+.. autoclass:: squabble.rules.disallow_timetz_type.DisallowTimetzType
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
 RequireColumns
 --------------
 .. autoclass:: squabble.rules.require_columns.RequireColumns

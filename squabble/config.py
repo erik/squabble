@@ -30,14 +30,14 @@ PRESETS = {
     'postgres': {
         'description': (
             'A sane set of defaults that checks for obviously '
-            'dangerous Postgres migrations and antipatterns.'
+            'dangerous Postgres migrations and query antipatterns.'
         ),
         'config': {
             'rules': {
                 'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
                 'DisallowNotIn': {},
-                'DisallowTimeTzType': {},
+                'DisallowTimetzType': {},
                 'DisallowPaddedCharType': {},
             }
         }
@@ -75,7 +75,7 @@ PRESETS = {
                 'DisallowFloatTypes': {},
                 'RequirePrimaryKey': {},
                 'DisallowNotIn': {},
-                'DisallowTimeTzType': {},
+                'DisallowTimetzType': {},
                 'DisallowPaddedCharType': {},
                 # Yes, these are incompatible.
                 'DisallowForeignKey': {},
