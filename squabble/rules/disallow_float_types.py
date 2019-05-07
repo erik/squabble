@@ -4,6 +4,7 @@ import squabble.rule
 from squabble.lint import Severity
 from squabble.message import Message
 from squabble.rules import BaseRule
+from squabble.util import format_type_name
 
 
 def _parse_column_type(typ):
@@ -21,21 +22,7 @@ def _parse_column_type(typ):
     create_table = pglast.Node(pglast.parse_sql(sql))[0].stmt
     type_name = create_table.tableElts[0].typeName
 
-    return _type_name_to_string(type_name)
-
-
-def _type_name_to_string(node):
-    """
-    Return a simple stringified version of a ``pglast.node.TypeName`` node.
-
-    Note that this won't be suitable for printing, and ignores type
-    modifiers (e.g. ``NUMERIC(3,4)`` => ``NUMERIC``).
-    """
-
-    return '.'.join([
-        part['String']['str']
-        for part in node.names._items
-    ])
+    return format_type_name(type_name)
 
 
 class DisallowFloatTypes(BaseRule):
@@ -84,7 +71,7 @@ class DisallowFloatTypes(BaseRule):
 
     @squabble.rule.node_visitor
     def _check_column_def(self, ctx, node):
-        col_type = _type_name_to_string(node.typeName)
+        col_type = format_type_name(node.typeName)
 
         if col_type in self._INEXACT_TYPES:
             ctx.report(self.LossyFloatType(), node=node, severity=Severity.LOW)

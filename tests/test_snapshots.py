@@ -50,10 +50,12 @@ def test_snapshot(file_name):
 
     for i, e in zip(issues, expected):
         info = reporter._issue_info(i, contents)
+        actual = {
+            k: info.get(k)
+            for k in e.keys()
+        }
 
-        for k, v in e.items():
-            assert k in info
-            assert info[k] == v
+        assert actual == e
 
 
 @pytest.mark.parametrize('reporter_name', reporter._REPORTERS.keys())

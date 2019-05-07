@@ -49,9 +49,38 @@ DisallowFloatTypes
    :show-inheritance:
    :exclude-members: enable
 
+DisallowNotIn
+-------------
+.. autoclass:: squabble.rules.disallow_not_in.DisallowNotIn
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
+DisallowPaddedCharType
+----------------------
+.. autoclass:: squabble.rules.disallow_padded_char_type.DisallowPaddedCharType
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
 DisallowRenameEnumValue
 -----------------------
 .. autoclass:: squabble.rules.disallow_rename_enum_value.DisallowRenameEnumValue
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
+DisallowTimestampPrecision
+--------------------------
+.. autoclass:: squabble.rules.disallow_timestamp_precision.DisallowTimestampPrecision
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
+
+DisallowTimetzType
+------------------
+.. autoclass:: squabble.rules.disallow_timetz_type.DisallowTimetzType
    :members:
    :show-inheritance:
    :exclude-members: enable
