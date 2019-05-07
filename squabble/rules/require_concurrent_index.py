@@ -15,8 +15,8 @@ class RequireConcurrentIndex(BaseRule):
     Require all new indexes to be created with ``CONCURRENTLY`` so they won't
     block.
 
-    By default, tables created in the same index are exempted, since they are
-    known to be empty. This can be changed with the option
+    By default, tables created in the same file as the index are exempted,
+    since they are known to be empty. This can be changed with the option
     ``"include_new_tables": true``.
 
     Configuration: ::
