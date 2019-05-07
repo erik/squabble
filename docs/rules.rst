@@ -70,6 +70,14 @@ DisallowRenameEnumValue
    :show-inheritance:
    :exclude-members: enable
 
+DisallowTimestampPrecision
+--------------------------
+.. autoclass:: squabble.rules.disallow_timestamp_precision.DisallowTimestampPrecision
+   :members:
+   :show-inheritance:
+   :exclude-members: enable
+
+
 DisallowTimetzType
 ------------------
 .. autoclass:: squabble.rules.disallow_timetz_type.DisallowTimetzType

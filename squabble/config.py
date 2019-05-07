@@ -39,6 +39,7 @@ PRESETS = {
                 'DisallowNotIn': {},
                 'DisallowTimetzType': {},
                 'DisallowPaddedCharType': {},
+                'DisallowTimestampPrecision': {},
             }
         }
     },
@@ -53,9 +54,9 @@ PRESETS = {
                 'AddColumnDisallowConstraints': {
                     'disallowed': ['DEFAULT', 'NOT NULL', 'UNIQUE']
                 },
-                'RequireConcurrentIndex': {},
                 'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
+                'RequireConcurrentIndex': {},
             }
         }
     },
@@ -73,10 +74,11 @@ PRESETS = {
                 'DisallowRenameEnumValue': {},
                 'DisallowChangeColumnType': {},
                 'DisallowFloatTypes': {},
-                'RequirePrimaryKey': {},
                 'DisallowNotIn': {},
                 'DisallowTimetzType': {},
                 'DisallowPaddedCharType': {},
+                'DisallowTimestampPrecision': {},
+                'RequirePrimaryKey': {},
                 # Yes, these are incompatible.
                 'DisallowForeignKey': {},
                 'RequireForeignKey': {},

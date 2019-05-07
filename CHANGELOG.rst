@@ -8,9 +8,10 @@ New
 ~~~
 
 - Added `-x, --expanded` to show explanations of message codes after linting.
-- Added `DisallowNotIn` rule
-- Added `DisallowPaddedCharType` rule
-- Added `DisallowTimetzType` rule
+- Added `DisallowNotIn` rule.
+- Added `DisallowPaddedCharType` rule.
+- Added `DisallowTimetzType` rule.
+- Added `DisallowTimestampPrecision` rule.
 
 Changes
 ~~~~~~~
