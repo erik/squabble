@@ -65,8 +65,6 @@ class DisallowTimestampPrecision(BaseRule):
     def _check_column_def(self, ctx, node, min_precision):
         col_type = format_type_name(node.typeName)
 
-        print('looking at', col_type)
-
         if col_type not in self._CHECKED_TYPES:
             return
 
