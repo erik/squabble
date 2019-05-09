@@ -16,6 +16,8 @@ New
 Changes
 ~~~~~~~
 
+- Modified `-p, --preset` to allow multiple presets to be used at once.
+
 Fixes
 ~~~~~
 

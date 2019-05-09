@@ -30,13 +30,22 @@ def test_get_base_config_without_preset():
 
 
 def test_get_base_config_with_preset():
-    cfg = config.get_base_config('postgres')
+    cfg = config.get_base_config(['postgres'])
     assert cfg.rules == config.PRESETS['postgres']['config']['rules']
 
 
 def test_unknown_preset():
     with pytest.raises(config.UnknownPresetException):
-        config.get_base_config(preset_name='asdf')
+        config.get_base_config(preset_names=['asdf'])
+
+
+def test_merging_presets():
+    cfg = config.get_base_config(preset_names=['postgres', 'full'])
+    merged = config._merge_dicts(
+        config.PRESETS['postgres']['config']['rules'],
+        config.PRESETS['full']['config']['rules']
+    )
+    assert cfg.rules == merged
 
 
 @patch('squabble.config._extract_file_rules')

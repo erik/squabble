@@ -135,22 +135,26 @@ def _get_vcs_root():
         'git rev-parse --show-toplevel 2>/dev/null || echo ""')
 
 
-def get_base_config(preset_name=None):
+def get_base_config(preset_names=None):
     """
     Return a basic config value that can be overridden by user configuration
     files.
 
-    :param preset_name: The named preset to use, or None
+    :param preset_names: The named presets to use (applied in order), or None
     """
-    if not preset_name:
+    if not preset_names:
         return Config(**DEFAULT_CONFIG)
 
-    if preset_name not in PRESETS:
-        raise UnknownPresetException(preset_name)
+    preset_settings = {}
+    for name in preset_names:
+        if name not in PRESETS:
+            raise UnknownPresetException(name)
+
+        preset_settings = _merge_dicts(preset_settings, PRESETS[name])
 
     return Config(**{
         **DEFAULT_CONFIG,
-        **PRESETS[preset_name]['config']
+        **preset_settings['config']
     })
 
 
@@ -162,7 +166,7 @@ def _parse_config_file(config_file):
         return json.load(fp)
 
 
-def load_config(config_file, preset_name=None, reporter_name=None):
+def load_config(config_file, preset_names=None, reporter_name=None):
     """
     Load configuration from a file, optionally applying a predefined
     set of rules.
@@ -175,7 +179,7 @@ def load_config(config_file, preset_name=None, reporter_name=None):
     :param reporter_name: Override the reporter named in configuration.
     :type reporter_name: str
     """
-    base = get_base_config(preset_name)
+    base = get_base_config(preset_names)
     config = _parse_config_file(config_file)
 
     rules = copy.deepcopy(base.rules)
@@ -280,3 +284,30 @@ def _parse_options(opts):
         options[key] = values[0] if len(values) == 1 else values
 
     return options
+
+
+def _merge_dicts(a, b):
+    """
+    Combine the values of two (possibly nested) dictionaries.
+
+    Values in ``b`` will take precedence over those in ``a``. This function
+    will return a new dictionary rather than mutating its arguments.
+
+    >>> a = {'foo': {'a': 1, 'b': 2}}
+    >>> b = {'foo': {'b': 3, 'c': 4}, 'bar': 5}
+    >>> m = _merge_dicts(a, b)
+    >>> m == {'foo': {'a': 1, 'b': 3, 'c': 4}, 'bar': 5}
+    True
+    """
+    def _inner(x, y, out):
+        """Recursive helper function which mutates its arguments."""
+        for k in x.keys() | y.keys():
+            xv, yv = x.get(k, {}), y.get(k, {})
+
+            if isinstance(xv, dict) and isinstance(yv, dict):
+                out[k] = _inner(xv, yv, {})
+            else:
+                out[k] = yv if k in y else xv
+        return out
+
+    return _inner(a, b, {})

@@ -14,14 +14,14 @@ Options:
 
   -x --expanded           Show explantions for every raised message.
 
+  -c --config=PATH        Path to configuration file.
+  -p --preset=PRESETS     Comma-separated list of presets to use as a base.
+  -r --reporter=REPORTER  Use REPORTER for output rather than one in config.
+
   -e --explain=CODE       Show detailed explanation of a message code.
   --list-presets          List available preset configurations.
   --list-rules            List available rules.
   --show-rule=RULE        Show detailed information about RULE.
-
-  -c --config=PATH        Path to configuration file.
-  -p --preset=PRESET      Start with a base preset rule configuration.
-  -r --reporter=REPORTER  Use REPORTER for output rather than one in config.
 """
 
 import glob
@@ -63,9 +63,11 @@ def dispatch_args(args):
     if config_file and not os.path.exists(config_file):
         sys.exit('%s: no such file or directory' % config_file)
 
+    presets = args['--preset'].split(',') if args['--preset'] else []
+
     base_config = config.load_config(
         config_file,
-        preset_name=args['--preset'],
+        preset_names=presets,
         reporter_name=args['--reporter'])
 
     # Load all of the rule classes into memory (need to do this now to
