@@ -74,11 +74,11 @@ def report(reporter_name, issues, files):
     if reporter_name not in _REPORTERS:
         raise UnknownReporterException(reporter_name)
 
-    reporter = _REPORTERS[reporter_name]
+    reporter_fn = _REPORTERS[reporter_name]
 
     for i in issues:
         file_contents = files.get(i.file, '')
-        for line in reporter(i, file_contents):
+        for line in reporter_fn(i, file_contents):
             _print_err(line)
 
 

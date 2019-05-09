@@ -47,7 +47,7 @@ class DisallowNotIn(BaseRule):
 
         def check_bool_expr(child_ctx, child_node):
             if child_node.boolop == BoolExprType.NOT_EXPR:
-                ctx.register('SubLink', self._check_not_in_subquery())
+                child_ctx.register('SubLink', self._check_not_in_subquery())
 
         ctx.register('BoolExpr', check_bool_expr)
 
@@ -59,10 +59,10 @@ class DisallowNotIn(BaseRule):
             return
 
         # Specifically only ``NOT IN``
-        elif node.name.string_value != "<>":
+        if node.name.string_value != "<>":
             return
 
-        return ctx.report(
+        ctx.report(
             self.NotInNotAllowed(),
             node=node.rexpr[0],
             severity=Severity.LOW)
@@ -74,7 +74,7 @@ class DisallowNotIn(BaseRule):
         if node.subLinkType != SubLinkType.ANY_SUBLINK:
             return
 
-        return ctx.report(
+        ctx.report(
             self.NotInNotAllowed(),
             node=node,
             severity=Severity.LOW)
