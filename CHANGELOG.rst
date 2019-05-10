@@ -2,21 +2,22 @@ Changelog
 =========
 
 v1.3.0 (unreleased)
-------------------
+-------------------
 
 New
 ~~~
 
-- Added `-x, --expanded` to show explanations of message codes after linting.
-- Added `DisallowNotIn` rule.
-- Added `DisallowPaddedCharType` rule.
-- Added `DisallowTimetzType` rule.
-- Added `DisallowTimestampPrecision` rule.
+- Added ``-x, --expanded`` to show explanations of message codes after linting.
+- Added ``DisallowNotIn`` rule.
+- Added ``DisallowPaddedCharType`` rule.
+- Added ``DisallowTimetzType`` rule.
+- Added ``DisallowTimestampPrecision`` rule.
 
 Changes
 ~~~~~~~
 
-- Modified `-p, --preset` to allow multiple presets to be used at once.
+- Modified ``-p, --preset`` to allow multiple presets to be used at once.
+- Update packaging to run tests through ``python setup.py test``.
 
 Fixes
 ~~~~~
