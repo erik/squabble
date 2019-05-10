@@ -24,10 +24,19 @@ setup(
     },
     python_requires='>=3.5',
     license='GPLv3+',
+    setup_requires=[
+        'pytest-runner',
+    ],
     install_requires=[
         'pglast==1.1',
         'docopt==0.6.2',
         'colorama==0.4.1'
+    ],
+    tests_require=[
+        'pytest',
+        'pytest-runner',
+        'pytest-cov',
+        'flake8',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
