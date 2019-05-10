@@ -47,7 +47,7 @@ class Registry:
         Add ``msg`` to the registry, and assign a ``CODE`` value if not
         explicitly specified.
         """
-        if not hasattr(msg, 'CODE'):
+        if msg.CODE is None:
             setattr(msg, 'CODE', cls._next_code())
             logger.info('assigning code %s to %s', msg.CODE, msg)
 
@@ -98,6 +98,7 @@ class Message:
     'This may indicate poor design, consider multiple tables instead.'
     """
     TEMPLATE = None
+    CODE = None
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
