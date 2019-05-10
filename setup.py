@@ -36,7 +36,6 @@ setup(
         'pytest',
         'pytest-runner',
         'pytest-cov',
-        'flake8',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
