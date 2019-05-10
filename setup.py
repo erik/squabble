@@ -28,7 +28,7 @@ setup(
         'pytest-runner',
     ],
     install_requires=[
-        'pglast==1.1',
+        'pglast==1.4',
         'docopt==0.6.2',
         'colorama==0.4.1'
     ],

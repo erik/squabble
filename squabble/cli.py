@@ -130,6 +130,15 @@ def _slurp_file(file_name):
         return fp.read()
 
 
+def _slurp_stdin():
+    """Read entirety of stdin, silently exiting when sent an interrupt."""
+    try:
+        return sys.stdin.read()
+    except KeyboardInterrupt:
+        print('aborted')
+        return None
+
+
 def collect_files(paths):
     """
     Given a list of files or directories, find all named files as well as
@@ -144,7 +153,9 @@ def collect_files(paths):
 
     for path in map(os.path.expanduser, paths):
         if path == '-':
-            files.append(('stdin', sys.stdin.read()))
+            stdin = _slurp_stdin()
+            if stdin is not None and stdin.strip() != '':
+                files.append(('stdin', stdin))
 
         elif not os.path.exists(path):
             sys.exit('%s: no such file or directory' % path)

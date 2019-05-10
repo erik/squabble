@@ -1,6 +1,23 @@
 Changelog
 =========
 
+v1.4.0 (unreleased)
+-------------------
+
+New
+~~~
+
+Changes
+~~~~~~~
+
+- Bump versions for library dependencies.
+
+Fixes
+~~~~~
+
+- Fixed standard input reader to not print a stack trace on interrupt.
+
+
 v1.3.0 (2019-05-10)
 -------------------
 
