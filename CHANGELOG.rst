@@ -1,7 +1,7 @@
 Changelog
 =========
 
-v1.4.0 (unreleased)
+v1.3.1 (unreleased)
 -------------------
 
 New
@@ -10,7 +10,7 @@ New
 Changes
 ~~~~~~~
 
-- Bump versions for library dependencies.
+- Upgrade ``pglast`` to version ``1.4``.
 
 Fixes
 ~~~~~

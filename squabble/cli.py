@@ -131,11 +131,13 @@ def _slurp_file(file_name):
 
 
 def _slurp_stdin():
-    """Read entirety of stdin, silently exiting when sent an interrupt."""
+    """
+    Read entirety of stdin and return as string, or ``None`` if a ``^c``
+    interrupt is triggered.
+    """
     try:
         return sys.stdin.read()
     except KeyboardInterrupt:
-        print('aborted')
         return None
 
 
