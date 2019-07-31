@@ -1,14 +1,14 @@
 Changelog
 =========
 
-v1.3.2 (unreleased)
+v1.3.2 (2019-07-30)
 -------------------
 
 Fixes
 ~~~~~
 
-- Prevent crash when running `RequireForeignKey` rule against a
-  `CREATE TABLE` statement with no columns defined.
+- Prevent crash when running ``RequireForeignKey`` rule against a
+  ``CREATE TABLE`` statement with no columns defined.
 - Fix Emacs Flycheck integration documentation.
 
 v1.3.1 (2019-05-15)
