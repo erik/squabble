@@ -28,7 +28,7 @@ file with flycheck turned on.
               (message (one-or-more not-newline)
                        (zero-or-more "\n"))
               line-end)
-     (error line-start "stdin:" line ":" column " HIGH "
+     (error line-start "stdin:" line ":" column ":ERROR "
             (message (one-or-more not-newline)
                      (zero-or-more "\n"))
             line-end))
@@ -44,7 +44,7 @@ flycheck at the ``squabble`` executable.
 
 .. code-block:: elisp
 
-   (custom-set-variable 'flycheck-sql-sqlint-executable "squabble")
+   (setq 'flycheck-sql-sqlint-executable "squabble")
 
 Unfortunately flycheck does not allow user customization of the
 command line arguments passed to the program, so you'll need to make
