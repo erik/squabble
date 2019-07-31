@@ -1,7 +1,7 @@
 -- enable:RequireForeignKey
 -- >>> {"line": 12, "column": 24, "message_id": "MissingForeignKeyConstraint"}
 -- >>> {"line": 19, "column": 46, "message_id": "MissingForeignKeyConstraint"}
-
+CREATE TABLE empty ();
 
 CREATE TABLE doesnt_match_column_regex(foo_id_not_a_references int);
 

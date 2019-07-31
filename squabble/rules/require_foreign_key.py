@@ -100,6 +100,8 @@ class RequireForeignKey(BaseRule):
 
 def _create_table_stmt(table_node, fk_regex, missing_fk):
     table_name = table_node.relation.relname.value
+    if table_node.tableElts == pglast.Missing:
+        return
 
     for e in table_node.tableElts:
         # Defining a column, may include an inline constraint.
