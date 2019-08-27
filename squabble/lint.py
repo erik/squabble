@@ -40,8 +40,21 @@ class Severity(enum.Enum):
 
 
 def _parse_string(text):
-    """Use ``pglast`` to turn ``text`` into a SQL AST."""
-    return pglast.Node(pglast.parse_sql(text))
+    """
+    Use ``pglast`` to turn ``text`` into a SQL AST node.
+
+    Returns ``pglast.node.Scalar(None)`` when no AST nodes could be
+    parsed. This is a hack, but prevents convoluting the downstream
+    logic too much, as ``Context.traverse`` will simply ignore scalar
+    values.
+
+    >>> _parse_string('SELECT 1')
+    [1*{RawStmt}]
+    >>> _parse_string('-- just a comment')
+    <None>
+    """
+    ast = pglast.parse_sql(text)
+    return pglast.Node(ast) if ast else pglast.node.Scalar(None)
 
 
 def _configure_rules(rule_config):
