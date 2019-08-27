@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v1.3.3 (2019-08-27)
+-------------------
+
+Fixes
+~~~~~
+
+- Fix crash when handling SQL files containing only comments.
+ 
 v1.3.2 (2019-07-30)
 -------------------
 

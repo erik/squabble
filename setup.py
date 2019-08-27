@@ -2,7 +2,7 @@ import os.path
 
 from setuptools import setup, find_packages
 
-__version__ = '1.3.2'
+__version__ = '1.3.3'
 
 
 readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
