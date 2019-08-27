@@ -23,7 +23,7 @@ class DisallowTimestampPrecision(BaseRule):
 
     Configuration ::
 
-       { "DisallowTimetzType": {
+       { "DisallowTimestampPrecision": {
            "allow_precision_greater_than": 0
          }
        }

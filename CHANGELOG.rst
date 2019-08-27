@@ -8,7 +8,7 @@ Fixes
 ~~~~~
 
 - Fix crash when handling SQL files containing only comments.
- 
+
 v1.3.2 (2019-07-30)
 -------------------
 
