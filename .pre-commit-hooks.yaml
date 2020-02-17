@@ -1,0 +1,7 @@
+- id: squabble
+  name: squabble
+  description: "squabble: An extensible linter for SQL queries and migrations."
+  entry: squabble
+  language: python
+  language_version: python3
+  types: [sql]
