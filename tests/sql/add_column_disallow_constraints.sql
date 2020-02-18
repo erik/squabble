@@ -1,4 +1,4 @@
--- enable:AddColumnDisallowConstraints disallowed=DEFAULT,FOREIGN
+-- squabble-enable:AddColumnDisallowConstraints disallowed=DEFAULT,FOREIGN
 -- >>> {"line": 4, "column": 46, "message_id": "ConstraintNotAllowed"}
 
 ALTER TABLE foobar ADD COLUMN colname coltype DEFAULT baz;

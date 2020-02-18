@@ -1,4 +1,4 @@
--- enable:RequirePrimaryKey
+-- squabble-enable:RequirePrimaryKey
 -- >>> {"line": 14, "column": 13, "message_id": "MissingPrimaryKey"}
 
 CREATE TABLE inline_pk(

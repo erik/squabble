@@ -1,4 +1,4 @@
--- enable:DisallowPaddedCharType
+-- squabble-enable:DisallowPaddedCharType
 -- >>> {"line": 13, "column": 2, "message_id": "WastefulCharType"}
 -- >>> {"line": 14, "column": 2, "message_id": "WastefulCharType"}
 -- >>> {"line": 22, "column": 13, "message_id": "WastefulCharType"}

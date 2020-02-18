@@ -87,15 +87,15 @@ Per-File Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Configuration can also be applied at the file level by using SQL line comments
-in the form ``-- enable:RuleName`` or ``-- disable:RuleName``.
+in the form ``-- squabble-enable:RuleName`` or ``-- squabble-disable:RuleName``.
 
 For example, to disable ``RuleA`` and enable ``RuleB`` just for one file,
 this could be done:
 
 .. code-block:: sql
 
-   -- disable:RuleA
-   -- enable:RuleB config=value array=1,2,3
+   -- squabble-disable:RuleA
+   -- squabble-enable:RuleB config=value array=1,2,3
    SELECT email FROM users WHERE ...;
 
 

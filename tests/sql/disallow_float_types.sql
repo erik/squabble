@@ -1,4 +1,4 @@
--- enable:DisallowFloatTypes
+-- squabble-enable:DisallowFloatTypes
 -- >>> {"line": 8,  "column": 2, "message_id": "LossyFloatType"}
 -- >>> {"line": 9,  "column": 2, "message_id": "LossyFloatType"}
 -- >>> {"line": 15, "column": 2, "message_id": "LossyFloatType"}

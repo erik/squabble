@@ -219,10 +219,10 @@ def _extract_file_rules(text):
 
     Valid lines are SQL line comments that enable or disable specific rules.
 
-    >>> rules = _extract_file_rules('-- enable:rule1 arr=a,b,c')
-    >>> rules['disable']
+    >>> r = _extract_file_rules('-- squabble-enable:rule1 arr=a,b,c')
+    >>> r['disable']
     []
-    >>> rules['enable']
+    >>> r['enable']
     {'rule1': {'arr': ['a', 'b', 'c']}}
     """
     rules = {
@@ -230,7 +230,11 @@ def _extract_file_rules(text):
         'disable': [],
     }
 
-    comment_re = re.compile(r'--\s*(enable|disable):(\w+)(.*?)$', re.I)
+    comment_re = re.compile(
+        r'--\s*'
+        r'(?:squabble-)?(enable|disable)'
+        r'(?::\s*(\w+)(.*?))?'
+        r'$', re.I)
 
     for line in text.splitlines():
         line = line.strip()

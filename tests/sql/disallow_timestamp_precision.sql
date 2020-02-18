@@ -1,4 +1,4 @@
--- enable:DisallowTimestampPrecision allow_precision_greater_than=5
+-- squabble-enable:DisallowTimestampPrecision allow_precision_greater_than=5
 -- >>> {"line": 24, "column": 6, "message_id": "NoTimestampPrecision"}
 -- >>> {"line": 25, "column": 6, "message_id": "NoTimestampPrecision"}
 -- >>> {"line": 26, "column": 6, "message_id": "NoTimestampPrecision"}
