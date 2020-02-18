@@ -98,6 +98,11 @@ this could be done:
    -- squabble-enable:RuleB config=value array=1,2,3
    SELECT email FROM users WHERE ...;
 
+To prevent squabble from running on a file, use ``-- squabble-disable``. Note
+that this will also disable syntax checking. Note that this flag will take
+precedence over any other configuration set either on the command line or in
+the rest of the file.
+
 
 Example Configuration
 ~~~~~~~~~~~~~~~~~~~~~

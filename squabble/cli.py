@@ -106,6 +106,8 @@ def run_linter(base_config, paths, expanded):
     issues = []
     for file_name, contents in files:
         file_config = config.apply_file_config(base_config, contents)
+        if file_config is None:
+            continue
         issues += lint.check_file(file_config, file_name, contents)
 
     reporter.report(base_config.reporter, issues, dict(files))

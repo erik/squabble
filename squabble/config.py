@@ -198,11 +198,16 @@ def apply_file_config(base, contents):
     Given a base configuration object and the contents of a file,
     return a new config that applies any file-specific rule
     additions/deletions.
+
+    Returns ``None`` if the file should be skipped.
     """
     # Operate on a copy so we don't mutate the base config
     file_rules = copy.deepcopy(base.rules)
 
     rules = _extract_file_rules(contents)
+
+    if rules['skip_file']:
+        return None
 
     for rule, opts in rules['enable'].items():
         file_rules[rule] = opts
@@ -224,10 +229,16 @@ def _extract_file_rules(text):
     []
     >>> r['enable']
     {'rule1': {'arr': ['a', 'b', 'c']}}
+    >>> r['skip_file']
+    False
+    >>> r = _extract_file_rules('-- squabble-disable')
+    >>> r['skip_file']
+    True
     """
     rules = {
         'enable': {},
         'disable': [],
+        'skip_file': False
     }
 
     comment_re = re.compile(
@@ -245,7 +256,10 @@ def _extract_file_rules(text):
 
         action, rule, opts = m.groups()
 
-        if action == 'disable':
+        if action == 'disable' and not rule:
+            rules['skip_file'] = True
+
+        elif action == 'disable':
             rules['disable'].append(rule)
 
         elif action == 'enable':
