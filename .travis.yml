@@ -1,10 +1,8 @@
 language: python
-cache: pip
-# This is currently required for py3.7
-dist: xenial
 python:
   - 3.6
   - 3.7
+  - 3.8
 install:
   - python setup.py develop
   - pip install flake8
