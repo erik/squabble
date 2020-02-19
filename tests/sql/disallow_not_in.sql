@@ -1,4 +1,4 @@
--- enable:DisallowNotIn
+-- squabble-enable:DisallowNotIn
 -- >>> {"line": 8, "column": 17, "message_id": "NotInNotAllowed"}
 -- >>> {"line": 12, "column": 9, "message_id": "NotInNotAllowed"}
 

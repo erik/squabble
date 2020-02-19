@@ -1,4 +1,4 @@
--- enable:DisallowRenameEnumValue
+-- squabble-enable:DisallowRenameEnumValue
 -- >>> {"message_id": "RenameNotAllowed"}
 
 ALTER TYPE this_is_fine ADD VALUE '!!!';

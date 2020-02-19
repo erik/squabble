@@ -1,4 +1,4 @@
--- enable:DisallowForeignKey excluded=fk_allowed,new_table
+-- squabble-enable:DisallowForeignKey excluded=fk_allowed,new_table
 -- >>> {"line": 7, "column": 47, "message_id": "DisallowedForeignKeyConstraint", "message_params": {"table": "foreign_key_reference"}}
 -- >>> {"line": 8, "column": 53, "message_id": "DisallowedForeignKeyConstraint", "message_params": {"table": "inline_foreign_key_reference"}}
 -- >>> {"line": 9, "column": 42, "message_id": "DisallowedForeignKeyConstraint", "message_params": {"table": "alter_table_with_fk_later"}}

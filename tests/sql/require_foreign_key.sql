@@ -1,4 +1,4 @@
--- enable:RequireForeignKey
+-- squabble-enable:RequireForeignKey
 -- >>> {"line": 12, "column": 24, "message_id": "MissingForeignKeyConstraint"}
 -- >>> {"line": 19, "column": 46, "message_id": "MissingForeignKeyConstraint"}
 CREATE TABLE empty ();

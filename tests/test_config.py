@@ -19,6 +19,27 @@ bar
     expected = {
         'enable': {'foo': {'k1': 'v1', 'k2': 'v2'}},
         'disable': ['abc'],
+        'skip_file': False
+    }
+
+    assert expected == rules
+
+
+def test_extract_file_rules_with_prefix():
+    text = '''
+foo
+-- squabble-enable:foo k1=v1 k2=v2
+bar
+-- squabble-disable:abc enable:xyz
+-- squabble-disable
+'''
+
+    rules = config._extract_file_rules(text)
+
+    expected = {
+        'enable': {'foo': {'k1': 'v1', 'k2': 'v2'}},
+        'disable': ['abc'],
+        'skip_file': True
     }
 
     assert expected == rules
@@ -50,7 +71,11 @@ def test_merging_presets():
 
 @patch('squabble.config._extract_file_rules')
 def test_apply_file_config(mock_extract):
-    mock_extract.return_value = {'enable': {'baz': {'a': 1}}, 'disable': ['bar']}
+    mock_extract.return_value = {
+        'enable': {'baz': {'a': 1}},
+        'disable': ['bar'],
+        'skip_file': False
+    }
 
     orig = config.Config(reporter='', plugins=[], rules={'foo': {}, 'bar': {}})
     base = copy.deepcopy(orig)
@@ -61,6 +86,22 @@ def test_apply_file_config(mock_extract):
 
     # Make sure nothing has been mutated
     assert base == orig
+
+
+@patch('squabble.config._extract_file_rules')
+def test_apply_file_config_with_skip_file(mock_extract):
+    mock_extract.return_value = {
+        'enable': {},
+        'disable': [],
+        'skip_file': True
+    }
+
+    orig = config.Config(reporter='', plugins=[], rules={})
+    base = copy.deepcopy(orig)
+
+    modified = config.apply_file_config(base, 'file_name')
+
+    assert modified is None
 
 
 @patch('squabble.config._get_vcs_root')

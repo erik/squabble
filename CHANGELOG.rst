@@ -1,6 +1,25 @@
 Changelog
 =========
 
+v1.4.0 (unreleased)
+-------------------
+
+New
+~~~
+
+- Added `precommit <https://pre-commit.com/>`__ hook definition (Thanks
+  @PhilipTrauner!)
+- Added ``squabble-disable`` configuration to disable all lint checks for a
+  file.
+
+Changes
+~~~~~~~
+
+- Per-file configuration is now done using ``squabble-enable:rule`` and
+  ``squabble-disable:rule``. The original ``enable:rule`` format will continue
+  to be supported, but is deprecated.
+
+
 v1.3.3 (2019-08-27)
 -------------------
 

@@ -1,4 +1,4 @@
--- enable:DisallowTimetzType
+-- squabble-enable:DisallowTimetzType
 -- >>> {"line": 15, "column": 6, "message_id": "NoTimetzType"}
 -- >>> {"line": 16, "column": 6, "message_id": "NoTimetzType"}
 -- >>> {"line": 24, "column": 2, "message_id": "NoCurrentTime"}
