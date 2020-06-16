@@ -67,7 +67,7 @@ and configuration options)
 
 .. code-block:: console
 
-   $ squabble --show-rule AddColumnsDisallowConstraints
+   $ squabble --show-rule AddColumnDisallowConstraints
 
 Once a configuration file is in place, it can be passed explicitly on
 the command line, or automatically looked up.
