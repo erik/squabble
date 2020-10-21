@@ -5,7 +5,7 @@ import importlib.util as import_util
 import logging
 import os.path
 
-from squabble import UnknownRuleException
+from squabble import UnknownRuleException, PEP487Object
 
 
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ def node_visitor(fn):
     return wrapper
 
 
-class Registry:
+class Registry(PEP487Object):
     """
     Singleton instance used to keep track of all rules.
 
