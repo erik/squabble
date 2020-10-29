@@ -1,4 +1,3 @@
-import abc
 import sys
 import types
 import logging
@@ -22,8 +21,10 @@ class UnknownRuleException(SquabbleException):
         super().__init__('unknown rule: "%s"' % name)
 
 
-# The following implementation is half of the code in the package pep487 available at
-# https://github.com/zaehlwerk/pep487
+# The following implementation is half of the code in the package
+# pep487 available at https://github.com/zaehlwerk/pep487
+#
+# This is used to support Python 3.5.
 
 
 HAS_PY36 = sys.version_info >= (3, 6)
