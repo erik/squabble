@@ -1,9 +1,10 @@
 import inspect
 
 from squabble.rule import Registry
+from squabble import PEP487Object
 
 
-class BaseRule:
+class BaseRule(PEP487Object):
     """
     Base implementation of a linter rule.
 

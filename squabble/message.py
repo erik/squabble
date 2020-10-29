@@ -1,7 +1,7 @@
 import inspect
 import logging
 
-from squabble import SquabbleException
+from squabble import SquabbleException, PEP487Object
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class DuplicateMessageCodeException(SquabbleException):
         super().__init__(message)
 
 
-class Registry:
+class Registry(PEP487Object):
     """
     Singleton which maps message code values to classes.
 
@@ -71,7 +71,7 @@ class Registry:
         return cls._CODE_COUNTER
 
 
-class Message:
+class Message(PEP487Object):
     """
     Messages represent specific issues identified by a lint rule.
 
